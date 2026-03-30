@@ -5,7 +5,7 @@ window.renderResources = function () {
 
     card.classList.toggle("is-hidden", r.hidden);
     card.querySelector(".resource-value").textContent =
-      `${r.amount} / ${r.max}`;
+      `${formatNumber(r.amount)} / ${r.max}`;
   });
 };
 

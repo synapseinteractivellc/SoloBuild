@@ -103,3 +103,7 @@ window.gainGold = function (amount) {
 window.roll = function (chance) {
   return Math.random() < chance;
 };
+
+window.formatNumber = function (value, decimals = 1) {
+  return Number(value % 1 === 0 ? value : value.toFixed(decimals));
+};
