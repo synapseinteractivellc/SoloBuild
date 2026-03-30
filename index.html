@@ -29,9 +29,9 @@
           <div class="resource-card resource-inline is-hidden" data-resource="wood">
             <span class="resource-name">Wood:</span>
             <span class="resource-value">0 / 5</span>
-            </div>
+          </div>
 
-            <div class="resource-card resource-inline is-hidden" data-resource="scrolls">
+          <div class="resource-card resource-inline is-hidden" data-resource="scrolls">
             <span class="resource-name">Scrolls:</span>
             <span class="resource-value">0 / 99</span>
           </div>
@@ -53,22 +53,22 @@
               <div class="character-grid">
                 <label class="field">
                   <span class="field-label">Name</span>
-                  <input class="text-input" type="text" value="Wanderer" maxlength="24" />
+                  <input id="player-name" class="text-input" type="text" value="Wanderer" maxlength="24" />
                 </label>
 
                 <div class="field">
                   <span class="field-label">Level</span>
-                  <div class="field-value">0</div>
+                  <div id="player-level" class="field-value">0</div>
                 </div>
 
                 <div class="field">
                   <span class="field-label">XP</span>
-                  <div class="field-value">0 / 10</div>
+                  <div id="player-xp" class="field-value">0 / 10</div>
                 </div>
 
                 <div class="field field-wide">
                   <span class="field-label">Titles</span>
-                  <div class="field-value">N/A</div>
+                  <div id="player-titles" class="field-value">N/A</div>
                 </div>
               </div>
             </div>
@@ -79,8 +79,8 @@
                 <section class="action-group">
                   <h4 class="action-group-title">General Actions</h4>
                   <div class="action-grid">
-                    <button class="action-button" type="button">View Skills</button>
-                    <button class="action-button" type="button">Inspect Status</button>
+                    <button class="action-button" type="button" disabled>View Skills</button>
+                    <button class="action-button" type="button" disabled>Inspect Status</button>
                   </div>
                 </section>
               </div>
@@ -101,20 +101,25 @@
                 <section class="action-group">
                   <h4 class="action-group-title">Work Actions</h4>
                   <div class="action-grid">
-                    <button class="action-button" type="button">Muck Stables</button>
-                    <button class="action-button" type="button">Look for Work</button>
-                    <button class="action-button" type="button">Rumors</button>
+                    <button class="action-button" type="button" data-action="muckStables">Muck Stables</button>
+                    <button class="action-button" type="button" data-action="lookForWork">Look for Work</button>
+                    <button class="action-button" type="button" data-action="rumors">Rumors</button>
                   </div>
                 </section>
 
                 <section class="action-group">
                   <h4 class="action-group-title">Rest & Trade</h4>
                   <div class="action-grid">
-                    <button class="action-button" type="button">Rest in Inn</button>
-                    <button class="action-button" type="button">Sell Wood</button>
+                    <button class="action-button" type="button" data-action="restInn">Rest in Inn</button>
+                    <button class="action-button" type="button" data-action="sellWood">Sell Wood</button>
                   </div>
                 </section>
               </div>
+            </div>
+
+            <div class="panel-section">
+              <h3 class="section-title">Event Log</h3>
+              <div id="event-log" class="event-log" aria-live="polite"></div>
             </div>
           </div>
 
@@ -122,17 +127,18 @@
             <div class="panel-section">
               <h2 class="panel-title">Wilds</h2>
               <p class="panel-copy">
-                The land around town is sparse, rough, and dangerous.
+                The land around town is sparse, rough, and touched by just enough magic to make it dangerous.
               </p>
             </div>
 
             <div class="panel-section">
+              <h3 class="section-title">Wild Actions</h3>
               <div class="action-groups">
                 <section class="action-group">
                   <h4 class="action-group-title">Resource Actions</h4>
                   <div class="action-grid">
-                    <button class="action-button" type="button">Gather Wood</button>
-                    <button class="action-button" type="button">Rest</button>
+                    <button class="action-button" type="button" data-action="gatherWood">Gather Wood</button>
+                    <button class="action-button" type="button" data-action="restWilds">Rest</button>
                   </div>
                 </section>
               </div>
@@ -144,29 +150,30 @@
       <aside class="panel stats-panel" aria-labelledby="stats-heading">
         <h2 id="stats-heading" class="panel-title">Vitals</h2>
 
+        <div class="stat-stack">
           <div class="stat-card stat-inline">
             <span class="stat-label">Life:</span>
             <div class="bar">
-              <div class="bar-fill bar-fill-life" style="width: 10%;"></div>
-              <span class="bar-text">1 / 10</span>
+              <div id="life-fill" class="bar-fill bar-fill-life" style="width: 10%;"></div>
+              <span id="life-text" class="bar-text">1 / 10</span>
             </div>
           </div>
 
           <div class="stat-card stat-inline">
             <span class="stat-label">Stamina:</span>
             <div class="bar">
-              <div class="bar-fill bar-fill-stamina" style="width: 10%;"></div>
-              <span class="bar-text">1 / 10</span>
+              <div id="stamina-fill" class="bar-fill bar-fill-stamina" style="width: 10%;"></div>
+              <span id="stamina-text" class="bar-text">1 / 10</span>
             </div>
           </div>
 
-          <div class="stat-card is-hidden stat-inline">
+          <div class="stat-card stat-inline is-hidden" data-stat="mana">
             <span class="stat-label">Mana:</span>
             <div class="bar">
-              <div class="bar-fill bar-fill-mana" style="width: 10%;"></div>
-              <span class="bar-text">1 / 10</span>
+              <div id="mana-fill" class="bar-fill bar-fill-mana" style="width: 0%;"></div>
+              <span id="mana-text" class="bar-text">0 / 0</span>
             </div>
-          </div>          
+          </div>
         </div>
       </aside>
     </main>
@@ -176,6 +183,7 @@
       <a href="https://opensource.org/license/mit" target="_blank" rel="noopener noreferrer">MIT License</a>
     </footer>
   </div>
+
   <script src="./js/main.js"></script>
 </body>
 </html>
