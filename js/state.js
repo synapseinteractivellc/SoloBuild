@@ -1,83 +1,102 @@
-const game = {
+window.game = {
   player: {
     name: "Wanderer",
     level: 0,
     xp: 0,
     xpToNext: 10,
+    titles: [],
     life: 1,
     maxLife: 10,
     stamina: 1,
     maxStamina: 10,
-    titles: [],
-    stats: {
-      strength: 1,
-      endurance: 1,
-      perception: 1,
-      will: 1,
-    },
-    skills: {
-      woodcutting: { level: 0, xp: 0, maxLevel: 10 },
-      labor: { level: 0, xp: 0, maxLevel: 10 },
-      exploration: { level: 0, xp: 0, maxLevel: 10 },
-      herbology: { level: 0, xp: 0, maxLevel: 10 },
-      masonry: { level: 0, xp: 0, maxLevel: 10 },
-    },
+    mana: 0,
+    maxMana: 0
   },
-
   resources: {
-    gold: { amount: 0, max: 10 },
-    wood: { amount: 0, max: 5 },
-    herbs: { amount: 0, max: 5 },
-    stone: { amount: 0, max: 5 },
-    leather: { amount: 0, max: 5 },
-    horns: { amount: 0, max: 5 },
-    scrolls: { amount: 0, max: 99 },
+    gold: { amount: 0, max: 10, hidden: false },
+    wood: { amount: 0, max: 5, hidden: true },
+    scrolls: { amount: 0, max: 99, hidden: true }
   },
-
-  world: {
-    currentTab: "character",
-    currentWildZone: "outskirts",
-    towerDiscovered: false,
-    towerUnlocked: false,
-  },
-
-  unlocks: {
-    gatherWood: true,
-    chopWood: false,
-    gatherHerbs: false,
-    gatherStone: false,
-    restWilds: true,
-    muckStables: true,
-    sellWood: true,
-    sellHerbs: false,
-    sellStone: false,
-    rumors: true,
-    lookForWork: true,
-    hireLaborer: false,
-    investigateTower: false,
-  },
-
   upgrades: {
-    coinPurse1: false,
-    coinPurse2: false,
-    stoneAxe: false,
+    coinPursePurchases: 0,
+    coinPurseMax: 2,
+    woodBundlePurchases: 0,
+    woodBundleMax: 2,
+    stoneAxe: false
   },
-
-  jobs: {
-    alchemistMet: false,
-    masonMet: false,
-    tannerMet: false,
-  },
-
-  workers: {
-    laborers: 0,
-  },
-
   timers: {
-    playTime: 0,
-    workSearches: 0,
     rumorSearches: 0,
+    workSearches: 0
   },
+  log: [
+    "You awaken battered and exhausted in a world that is not your own."
+  ]
+};
 
-  log: [],
+window.uiRefs = {};
+window.resourceCards = {};
+
+window.clamp = function (value, min, max) {
+  return Math.min(Math.max(value, min), max);
+};
+
+window.addLog = function (message) {
+  game.log.unshift(message);
+  if (game.log.length > 12) game.log.length = 12;
+};
+
+window.resourceAtCap = function (id) {
+  return game.resources[id].amount >= game.resources[id].max;
+};
+
+window.addResource = function (id, amount) {
+  const r = game.resources[id];
+  const next = clamp(r.amount + amount, 0, r.max);
+  const gained = next - r.amount;
+  r.amount = next;
+
+  if (r.hidden && r.amount > 0) r.hidden = false;
+
+  return gained;
+};
+
+window.spendResource = function (id, amount) {
+  const r = game.resources[id];
+  if (r.amount < amount) return false;
+  r.amount -= amount;
+  return true;
+};
+
+window.spendStamina = function (amount) {
+  if (game.player.stamina < amount) return false;
+  game.player.stamina = clamp(
+    game.player.stamina - amount,
+    0,
+    game.player.maxStamina
+  );
+  return true;
+};
+
+window.restoreStamina = function (amount) {
+  game.player.stamina = clamp(
+    game.player.stamina + amount,
+    0,
+    game.player.maxStamina
+  );
+};
+
+window.restoreLife = function (amount) {
+  game.player.life = clamp(
+    game.player.life + amount,
+    0,
+    game.player.maxLife
+  );
+};
+
+window.gainGold = function (amount) {
+  return addResource("gold", amount);
+};
+
+window.roll = function (chance) {
+  return Math.random() < chance;
 };

@@ -39,48 +39,29 @@
       </aside>
 
       <section class="main-panel">
-        <nav class="tabs" aria-label="Primary">
-          <button class="tab-button is-active" type="button" data-tab="character">Character</button>
+        <nav class="tabs" aria-label="Primary">            
+          <button class="tab-button is-active" type="button" data-tab="wilds">Wilds</button>
           <button class="tab-button" type="button" data-tab="village">Village</button>
-          <button class="tab-button" type="button" data-tab="wilds">Wilds</button>
+          <button class="tab-button" type="button" data-tab="character">Character</button>
         </nav>
 
-        <section class="panel content-panel">
-          <div class="tab-content" id="character-tab">
+        <section class="panel content-panel">               
+          <div class="tab-content" id="wilds-tab">
             <div class="panel-section">
-              <h2 class="panel-title">Character</h2>
-
-              <div class="character-grid">
-                <label class="field">
-                  <span class="field-label">Name</span>
-                  <input id="player-name" class="text-input" type="text" value="Wanderer" maxlength="24" />
-                </label>
-
-                <div class="field">
-                  <span class="field-label">Level</span>
-                  <div id="player-level" class="field-value">0</div>
-                </div>
-
-                <div class="field">
-                  <span class="field-label">XP</span>
-                  <div id="player-xp" class="field-value">0 / 10</div>
-                </div>
-
-                <div class="field field-wide">
-                  <span class="field-label">Titles</span>
-                  <div id="player-titles" class="field-value">N/A</div>
-                </div>
-              </div>
+              <h2 class="panel-title">Wilds</h2>
+              <p class="panel-copy">
+                The land around town is sparse, rough, and touched by just enough magic to make it dangerous.
+              </p>
             </div>
 
             <div class="panel-section">
-              <h3 class="section-title">Action Categories</h3>
+              <h3 class="section-title">Wild Actions</h3>
               <div class="action-groups">
                 <section class="action-group">
-                  <h4 class="action-group-title">General Actions</h4>
+                  <h4 class="action-group-title">Resource Actions</h4>
                   <div class="action-grid">
-                    <button class="action-button" type="button" disabled>View Skills</button>
-                    <button class="action-button" type="button" disabled>Inspect Status</button>
+                    <button class="action-button" type="button" data-action="gatherWood">Gather Wood</button>
+                    <button class="action-button" type="button" data-action="restWilds">Rest</button>
                   </div>
                 </section>
               </div>
@@ -118,27 +99,60 @@
             </div>
 
             <div class="panel-section">
+              <h3 class="section-title">Upgrades</h3>
+              <div class="action-groups">
+                <section class="action-group">
+                  <h4 class="action-group-title">Starter Upgrades</h4>
+                  <div class="action-grid">
+                    <button class="action-button" type="button" data-action="buyCoinPurse">Coin Purse (-10 Gold)</button>
+                    <button class="action-button" type="button" data-action="buyStoneAxe">Stone Axe (-10 Gold)</button>
+                    <button class="action-button" type="button" data-action="buyWoodBundle">Wood Bundle (-10 Gold)</button>
+                  </div>
+                </section>
+              </div>
+            </div>
+
+            <div class="panel-section">
               <h3 class="section-title">Event Log</h3>
               <div id="event-log" class="event-log" aria-live="polite"></div>
             </div>
           </div>
 
-          <div class="tab-content is-hidden" id="wilds-tab">
+          <div class="tab-content is-hidden" id="character-tab">
             <div class="panel-section">
-              <h2 class="panel-title">Wilds</h2>
-              <p class="panel-copy">
-                The land around town is sparse, rough, and touched by just enough magic to make it dangerous.
-              </p>
+              <h2 class="panel-title">Character</h2>
+
+              <div class="character-grid">
+                <label class="field">
+                  <span class="field-label">Name</span>
+                  <input id="player-name" class="text-input" type="text" value="Wanderer" maxlength="24" />
+                </label>
+
+                <div class="field">
+                  <span class="field-label">Level</span>
+                  <div id="player-level" class="field-value">0</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">XP</span>
+                  <div id="player-xp" class="field-value">0 / 10</div>
+                </div>
+
+                <div class="field field-wide">
+                  <span class="field-label">Titles</span>
+                  <div id="player-titles" class="field-value">N/A</div>
+                </div>
+              </div>
             </div>
 
             <div class="panel-section">
-              <h3 class="section-title">Wild Actions</h3>
+              <h3 class="section-title">Action Categories</h3>
               <div class="action-groups">
                 <section class="action-group">
-                  <h4 class="action-group-title">Resource Actions</h4>
+                  <h4 class="action-group-title">General Actions</h4>
                   <div class="action-grid">
-                    <button class="action-button" type="button" data-action="gatherWood">Gather Wood</button>
-                    <button class="action-button" type="button" data-action="restWilds">Rest</button>
+                    <button class="action-button" type="button" disabled>View Skills</button>
+                    <button class="action-button" type="button" disabled>Inspect Status</button>
                   </div>
                 </section>
               </div>
@@ -184,6 +198,9 @@
     </footer>
   </div>
 
+  <script src="./js/state.js"></script>
+  <script src="./js/actions.js"></script>
+  <script src="./js/render.js"></script>
   <script src="./js/main.js"></script>
 </body>
 </html>
