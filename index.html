@@ -1,21 +1,181 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>SoloBuild - Web Game</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/main.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SoloBuild</title>
+  <link rel="stylesheet" href="./css/styles.css" />
 </head>
 <body>
-    <header>
-        <h1>SoloBuild</h1>
-        <p>Build, create, and challenge yourself in this solo web game adventure!</p>
+  <div class="app-shell">
+    <header class="site-header">
+      <div>
+        <h1 class="game-title">SoloBuild</h1>
+        <p class="game-subtitle">A text-based idle journey through a low-magic frontier.</p>
+      </div>
     </header>
-    <main>
-        <a href="#" class="cta-btn">Play Now</a>
+
+    <main class="game-layout">
+      <aside class="panel resources-panel" aria-labelledby="resources-heading">
+        <h2 id="resources-heading" class="panel-title">Resources</h2>
+
+        <div class="resource-list">
+          <div class="resource-card resource-inline" data-resource="gold">
+            <span class="resource-name">Gold:</span>
+            <span class="resource-value">0 / 10</span>
+          </div>
+
+          <div class="resource-card resource-inline is-hidden" data-resource="wood">
+            <span class="resource-name">Wood:</span>
+            <span class="resource-value">0 / 5</span>
+            </div>
+
+            <div class="resource-card resource-inline is-hidden" data-resource="scrolls">
+            <span class="resource-name">Scrolls:</span>
+            <span class="resource-value">0 / 99</span>
+          </div>
+        </div>
+      </aside>
+
+      <section class="main-panel">
+        <nav class="tabs" aria-label="Primary">
+          <button class="tab-button is-active" type="button" data-tab="character">Character</button>
+          <button class="tab-button" type="button" data-tab="village">Village</button>
+          <button class="tab-button" type="button" data-tab="wilds">Wilds</button>
+        </nav>
+
+        <section class="panel content-panel">
+          <div class="tab-content" id="character-tab">
+            <div class="panel-section">
+              <h2 class="panel-title">Character</h2>
+
+              <div class="character-grid">
+                <label class="field">
+                  <span class="field-label">Name</span>
+                  <input class="text-input" type="text" value="Wanderer" maxlength="24" />
+                </label>
+
+                <div class="field">
+                  <span class="field-label">Level</span>
+                  <div class="field-value">0</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">XP</span>
+                  <div class="field-value">0 / 10</div>
+                </div>
+
+                <div class="field field-wide">
+                  <span class="field-label">Titles</span>
+                  <div class="field-value">N/A</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-section">
+              <h3 class="section-title">Action Categories</h3>
+              <div class="action-groups">
+                <section class="action-group">
+                  <h4 class="action-group-title">General Actions</h4>
+                  <div class="action-grid">
+                    <button class="action-button" type="button">View Skills</button>
+                    <button class="action-button" type="button">Inspect Status</button>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-content is-hidden" id="village-tab">
+            <div class="panel-section">
+              <h2 class="panel-title">Village</h2>
+              <p class="panel-copy">
+                The village is where you can work odd jobs, sell goods, listen for rumors, and later meet the townsfolk who open new paths.
+              </p>
+            </div>
+
+            <div class="panel-section">
+              <h3 class="section-title">Town Actions</h3>
+              <div class="action-groups">
+                <section class="action-group">
+                  <h4 class="action-group-title">Work Actions</h4>
+                  <div class="action-grid">
+                    <button class="action-button" type="button">Muck Stables</button>
+                    <button class="action-button" type="button">Look for Work</button>
+                    <button class="action-button" type="button">Rumors</button>
+                  </div>
+                </section>
+
+                <section class="action-group">
+                  <h4 class="action-group-title">Rest & Trade</h4>
+                  <div class="action-grid">
+                    <button class="action-button" type="button">Rest in Inn</button>
+                    <button class="action-button" type="button">Sell Wood</button>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-content is-hidden" id="wilds-tab">
+            <div class="panel-section">
+              <h2 class="panel-title">Wilds</h2>
+              <p class="panel-copy">
+                The land around town is sparse, rough, and dangerous.
+              </p>
+            </div>
+
+            <div class="panel-section">
+              <div class="action-groups">
+                <section class="action-group">
+                  <h4 class="action-group-title">Resource Actions</h4>
+                  <div class="action-grid">
+                    <button class="action-button" type="button">Gather Wood</button>
+                    <button class="action-button" type="button">Rest</button>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="panel stats-panel" aria-labelledby="stats-heading">
+        <h2 id="stats-heading" class="panel-title">Vitals</h2>
+
+          <div class="stat-card stat-inline">
+            <span class="stat-label">Life:</span>
+            <div class="bar">
+              <div class="bar-fill bar-fill-life" style="width: 10%;"></div>
+              <span class="bar-text">1 / 10</span>
+            </div>
+          </div>
+
+          <div class="stat-card stat-inline">
+            <span class="stat-label">Stamina:</span>
+            <div class="bar">
+              <div class="bar-fill bar-fill-stamina" style="width: 10%;"></div>
+              <span class="bar-text">1 / 10</span>
+            </div>
+          </div>
+
+          <div class="stat-card is-hidden stat-inline">
+            <span class="stat-label">Mana:</span>
+            <div class="bar">
+              <div class="bar-fill bar-fill-mana" style="width: 10%;"></div>
+              <span class="bar-text">1 / 10</span>
+            </div>
+          </div>          
+        </div>
+      </aside>
     </main>
-    <footer>
-        &copy; 2026 SoloBuild. All rights reserved.
+
+    <footer class="site-footer">
+      <span>© 2026 Synapse Interactive LLC</span>
+      <a href="https://opensource.org/license/mit" target="_blank" rel="noopener noreferrer">MIT License</a>
     </footer>
+  </div>
+  <script src="./js/main.js"></script>
 </body>
 </html>
