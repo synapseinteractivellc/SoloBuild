@@ -55,6 +55,10 @@ window.renderActions = function () {
       disabled = game.player.stamina < 1;
     }
 
+    if (id === "hireLaborer") {
+      disabled = game.resources.gold.amount < 25;
+    }
+
     if (id === "buyCoinPurse") {
       disabled =
         game.upgrades.coinPursePurchases >= game.upgrades.coinPurseMax ||

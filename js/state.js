@@ -24,6 +24,9 @@ window.game = {
     woodBundleMax: 2,
     stoneAxe: false
   },
+  workers: {
+    laborers: 0
+  },
   timers: {
     rumorSearches: 0,
     workSearches: 0

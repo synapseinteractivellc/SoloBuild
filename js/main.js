@@ -104,6 +104,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  setInterval(() => {
+    const woodPerSecond = game.workers.laborers * 0.1;
+
+    if (woodPerSecond > 0 && !resourceAtCap("wood")) {
+      addResource("wood", woodPerSecond);
+    }
+
+    render();
+  }, 1000);
+
   // Init
   setActiveTab("wilds");
   render();

@@ -62,6 +62,17 @@ window.actions = {
     const gold = gainGold(2);
     addLog(`You sell wood for ${gold} gold.`);
   },
+  
+  hireLaborer() {
+    if (!spendResource("gold", 25)) {
+      addLog("You need 25 gold to hire a laborer.");
+      return;
+    }
+
+    game.workers.laborers += 1;
+
+    addLog(`You hire a laborer. Total laborers: ${game.workers.laborers}`);
+  },
 
   rumors() {
     game.timers.rumorSearches++;
