@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,26 +25,35 @@
             <span class="resource-value">0 / 10</span>
           </div>
 
+          <div class="resource-card resource-inline is-hidden" data-resource="scrolls">
+            <span class="resource-name">Scrolls:</span>
+            <span class="resource-value">0 / 10</span>
+          </div>
+
           <div class="resource-card resource-inline is-hidden" data-resource="wood">
             <span class="resource-name">Wood:</span>
             <span class="resource-value">0 / 5</span>
-          </div>
+          </div>          
 
-          <div class="resource-card resource-inline is-hidden" data-resource="scrolls">
-            <span class="resource-name">Scrolls:</span>
-            <span class="resource-value">0 / 99</span>
+          <div class="resource-card resource-inline is-hidden" data-resource="stone">
+            <span class="resource-name">Stone:</span>
+            <span class="resource-value">0 / 5</span>
+          </div>
+          <div class="resource-card resource-inline is-hidden" data-resource="herbs">
+            <span class="resource-name">Herbs:</span>
+            <span class="resource-value">0 / 5</span>
           </div>
         </div>
       </aside>
 
       <section class="main-panel">
-        <nav class="tabs" aria-label="Primary">            
+        <nav class="tabs" aria-label="Primary">
           <button class="tab-button is-active" type="button" data-tab="wilds">Wilds</button>
-          <button class="tab-button" type="button" data-tab="village">Village</button>
-          <button class="tab-button" type="button" data-tab="character">Character</button>
+          <button class="tab-button is-hidden" type="button" data-tab="village">Village</button>
+          <button class="tab-button is-hidden" type="button" data-tab="character">Character</button>
         </nav>
 
-        <section class="panel content-panel">               
+        <section class="panel content-panel">
           <div class="tab-content" id="wilds-tab">
             <div class="panel-section">
               <h2 class="panel-title">Wilds</h2>
@@ -55,14 +63,15 @@
             </div>
 
             <div class="panel-section">
-              <h3 class="section-title">Wild Actions</h3>
               <div class="action-groups">
                 <section class="action-group">
-                  <h4 class="action-group-title">Resource Actions</h4>
-                  <div class="action-grid">
-                    <button class="action-button" type="button" data-action="gatherWood">Gather Wood</button>
-                    <button class="action-button" type="button" data-action="restWilds">Rest</button>
-                  </div>
+                  <h4 class="action-group-title">Exploration</h4>
+                  <div class="action-grid" data-action-group="wilds-exploration"></div>
+                </section>
+
+                <section class="action-group">
+                  <h4 class="action-group-title">Survival</h4>
+                  <div class="action-grid" data-action-group="wilds-survival"></div>
                 </section>
               </div>
             </div>
@@ -72,8 +81,18 @@
             <div class="panel-section">
               <h2 class="panel-title">Village</h2>
               <p class="panel-copy">
-                The village is where you can work odd jobs, sell goods, listen for rumors, and later meet the townsfolk who open new paths.
+                The village is large enough that learning its streets, trades, and people will take time and effort.
               </p>
+            </div>
+
+            <div class="panel-section">
+              <h3 class="section-title">Exploration</h3>
+              <div class="action-groups">
+                <section class="action-group">
+                  <h4 class="action-group-title">Village Exploration</h4>
+                  <div class="action-grid" data-action-group="village-wander"></div>
+                </section>
+              </div>
             </div>
 
             <div class="panel-section">
@@ -81,20 +100,17 @@
               <div class="action-groups">
                 <section class="action-group">
                   <h4 class="action-group-title">Work Actions</h4>
-                  <div class="action-grid">
-                    <button class="action-button" type="button" data-action="muckStables">Muck Stables</button>
-                    <button class="action-button" type="button" data-action="lookForWork">Look for Work</button>
-                    <button class="action-button" type="button" data-action="rumors">Rumors</button>
-                  </div>
+                  <div class="action-grid" data-action-group="village-work"></div>
                 </section>
+              </div>
+            </div>
 
+            <div class="panel-section">
+              <h3 class="section-title">Market</h3>
+              <div class="action-groups">
                 <section class="action-group">
-                  <h4 class="action-group-title">Rest & Trade</h4>
-                  <div class="action-grid">
-                    <button class="action-button" type="button" data-action="restInn">Rest in Inn</button>
-                    <button class="action-button" type="button" data-action="sellWood">Sell Wood</button>
-                    <button class="action-button" data-action="hireLaborer">Hire Laborer (-25 Gold)</button>
-                  </div>
+                  <h4 class="action-group-title">Trade & Services</h4>
+                  <div class="action-grid" data-action-group="village-market"></div>
                 </section>
               </div>
             </div>
@@ -104,11 +120,7 @@
               <div class="action-groups">
                 <section class="action-group">
                   <h4 class="action-group-title">Starter Upgrades</h4>
-                  <div class="action-grid">
-                    <button class="action-button" type="button" data-action="buyCoinPurse">Coin Purse (-10 Gold)</button>
-                    <button class="action-button" type="button" data-action="buyStoneAxe">Stone Axe (-10 Gold)</button>
-                    <button class="action-button" type="button" data-action="buyWoodBundle">Wood Bundle (-10 Gold)</button>
-                  </div>
+                  <div class="action-grid" data-action-group="village-upgrades"></div>
                 </section>
               </div>
             </div>
@@ -146,10 +158,7 @@
               <div class="action-groups">
                 <section class="action-group">
                   <h4 class="action-group-title">General Actions</h4>
-                  <div class="action-grid">
-                    <button class="action-button" type="button" disabled>View Skills</button>
-                    <button class="action-button" type="button" disabled>Inspect Status</button>
-                  </div>
+                  <div class="action-grid" data-action-group="character-general"></div>
                 </section>
               </div>
             </div>
@@ -161,33 +170,33 @@
         <h2 id="stats-heading" class="panel-title">Vitals</h2>
 
         <div class="stat-stack">
-            <div class="stat-card stat-inline">
+          <div class="stat-card stat-inline">
             <span class="stat-label">Life:</span>
             <div class="bar">
-                <div id="life-fill" class="bar-fill bar-fill-life" style="width: 10%;"></div>
-                <span id="life-text" class="bar-text">1 / 10</span>
+              <div id="life-fill" class="bar-fill bar-fill-life" style="width: 10%;"></div>
+              <span id="life-text" class="bar-text">1 / 10</span>
             </div>
-            </div>
+          </div>
 
-            <div class="stat-card stat-inline">
+          <div class="stat-card stat-inline">
             <span class="stat-label">Stamina:</span>
             <div class="bar">
-                <div id="stamina-fill" class="bar-fill bar-fill-stamina" style="width: 10%;"></div>
-                <span id="stamina-text" class="bar-text">1 / 10</span>
+              <div id="stamina-fill" class="bar-fill bar-fill-stamina" style="width: 10%;"></div>
+              <span id="stamina-text" class="bar-text">1 / 10</span>
             </div>
-            </div>
+          </div>
 
-            <div class="stat-card stat-inline is-hidden" data-stat="mana">
+          <div class="stat-card stat-inline is-hidden" data-stat="mana">
             <span class="stat-label">Mana:</span>
             <div class="bar">
-                <div id="mana-fill" class="bar-fill bar-fill-mana" style="width: 0%;"></div>
-                <span id="mana-text" class="bar-text">0 / 0</span>
+              <div id="mana-fill" class="bar-fill bar-fill-mana" style="width: 0%;"></div>
+              <span id="mana-text" class="bar-text">0 / 0</span>
             </div>
-            </div>
+          </div>
         </div>
-        </aside>
+      </aside>
 
-        <aside class="panel event-log-panel" aria-labelledby="event-log-heading">
+      <aside class="panel event-log-panel" aria-labelledby="event-log-heading">
         <h2 id="event-log-heading" class="panel-title">Event Log</h2>
         <div id="event-log" class="event-log" aria-live="polite"></div>
       </aside>

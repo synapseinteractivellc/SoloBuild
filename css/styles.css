@@ -151,6 +151,10 @@ button {
   font-weight: 600;
 }
 
+.tab-button.is-hidden {
+  display: none;
+}
+
 .content-panel {
   min-height: 540px;
   padding: 1rem;
@@ -269,6 +273,10 @@ button {
   border-color: #555555;
   outline: none;
   transform: translateY(-1px);
+}
+
+.action-button.is-hidden {
+  display: none;
 }
 
 .resource-list,

@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabButtons = Array.from(document.querySelectorAll(".tab-button"));
   const tabPanels = Array.from(document.querySelectorAll(".tab-content"));
 
-  // UI References
   uiRefs.playerName = document.getElementById("player-name");
   uiRefs.playerLevel = document.getElementById("player-level");
   uiRefs.playerXp = document.getElementById("player-xp");
@@ -20,15 +19,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   uiRefs.eventLog = document.getElementById("event-log");
 
-  uiRefs.actionButtons = Array.from(document.querySelectorAll("[data-action]"));
-
-  // Resource cards
   resourceCards.gold = document.querySelector('[data-resource="gold"]');
-  resourceCards.wood = document.querySelector('[data-resource="wood"]');
   resourceCards.scrolls = document.querySelector('[data-resource="scrolls"]');
+  resourceCards.wood = document.querySelector('[data-resource="wood"]');
+  resourceCards.stone = document.querySelector('[data-resource="stone"]');
+  resourceCards.herbs = document.querySelector('[data-resource="herbs"]');
 
-  // Tab switching
+  uiRefs.tabButtons = {
+    wilds: document.querySelector('[data-tab="wilds"]'),
+    village: document.querySelector('[data-tab="village"]'),
+    character: document.querySelector('[data-tab="character"]')
+  };
+
+  function updateTabVisibility() {
+    if (uiRefs.tabButtons.village) {
+      uiRefs.tabButtons.village.classList.toggle("is-hidden", !game.unlocks.village);
+    }
+
+    if (uiRefs.tabButtons.character) {
+      uiRefs.tabButtons.character.classList.toggle("is-hidden", !game.unlocks.character);
+    }
+
+    const activeButton = uiRefs.tabButtons[game.activeTab];
+    if (!activeButton || activeButton.classList.contains("is-hidden")) {
+      game.activeTab = "wilds";
+    }
+  }
+
   function setActiveTab(tabId) {
+    game.activeTab = tabId;
+
     tabButtons.forEach((button) => {
       const isActive = button.dataset.tab === tabId;
       button.classList.toggle("is-active", isActive);
@@ -42,6 +62,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  window.setActiveTab = setActiveTab;
+  window.updateTabVisibility = updateTabVisibility;
+
   tabButtons.forEach((button) => {
     button.setAttribute("role", "tab");
     button.setAttribute(
@@ -54,30 +77,33 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     button.addEventListener("click", () => {
+      if (button.classList.contains("is-hidden")) return;
       setActiveTab(button.dataset.tab);
+      render();
     });
 
     button.addEventListener("keydown", (event) => {
-      const currentIndex = tabButtons.indexOf(button);
+      const visibleTabs = tabButtons.filter(btn => !btn.classList.contains("is-hidden"));
+      const currentIndex = visibleTabs.indexOf(button);
       let nextIndex = currentIndex;
 
       if (event.key === "ArrowRight") {
-        nextIndex = (currentIndex + 1) % tabButtons.length;
+        nextIndex = (currentIndex + 1) % visibleTabs.length;
       } else if (event.key === "ArrowLeft") {
-        nextIndex =
-          (currentIndex - 1 + tabButtons.length) % tabButtons.length;
+        nextIndex = (currentIndex - 1 + visibleTabs.length) % visibleTabs.length;
       } else if (event.key === "Home") {
         nextIndex = 0;
       } else if (event.key === "End") {
-        nextIndex = tabButtons.length - 1;
+        nextIndex = visibleTabs.length - 1;
       } else {
         return;
       }
 
       event.preventDefault();
-      const nextButton = tabButtons[nextIndex];
+      const nextButton = visibleTabs[nextIndex];
       nextButton.focus();
       setActiveTab(nextButton.dataset.tab);
+      render();
     });
   });
 
@@ -86,35 +112,44 @@ document.addEventListener("DOMContentLoaded", () => {
     tabsContainer.setAttribute("role", "tablist");
   }
 
-  // Player name input binding
   uiRefs.playerName.addEventListener("input", (event) => {
     game.player.name = event.target.value.trim() || "Wanderer";
   });
 
-  // Action buttons
-  uiRefs.actionButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const actionId = button.dataset.action;
-      const action = actions[actionId];
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-action]");
+    if (!button) return;
+    if (button.disabled) return;
 
-      if (!action) return;
+    const actionId = button.dataset.action;
+    const action = actions[actionId];
 
-      action();
-      render();
-    });
+    if (!action || typeof action.run !== "function") return;
+
+    action.run();
+    render();
   });
 
+  initializeActionGroups();
+
   setInterval(() => {
+    let changed = false;
+
     const woodPerSecond = game.workers.laborers * 0.1;
 
     if (woodPerSecond > 0 && !resourceAtCap("wood")) {
-      addResource("wood", woodPerSecond);
+      const gained = addResource("wood", woodPerSecond);
+      if (gained > 0) {
+        changed = true;
+      }
     }
 
-    render();
+    if (changed) {
+      render();
+    }
   }, 1000);
 
-  // Init
-  setActiveTab("wilds");
+  updateTabVisibility();
+  setActiveTab(game.activeTab || "wilds");
   render();
 });

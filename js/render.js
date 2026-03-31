@@ -14,12 +14,10 @@ window.renderVitals = function () {
   const stamPct = (game.player.stamina / game.player.maxStamina) * 100;
 
   uiRefs.lifeFill.style.width = `${lifePct}%`;
-  uiRefs.lifeText.textContent =
-    `${game.player.life} / ${game.player.maxLife}`;
+  uiRefs.lifeText.textContent = `${game.player.life} / ${game.player.maxLife}`;
 
   uiRefs.staminaFill.style.width = `${stamPct}%`;
-  uiRefs.staminaText.textContent =
-    `${game.player.stamina} / ${game.player.maxStamina}`;
+  uiRefs.staminaText.textContent = `${game.player.stamina} / ${game.player.maxStamina}`;
 };
 
 window.renderLog = function () {
@@ -33,62 +31,57 @@ window.renderLog = function () {
   });
 };
 
-window.renderActions = function () {
-  uiRefs.actionButtons.forEach(btn => {
-    const id = btn.dataset.action;
-    let disabled = false;
+window.initializeActionGroups = function () {
+  const groupEls = document.querySelectorAll("[data-action-group]");
 
-    if (id === "gatherWood") {
-      disabled = game.player.stamina < 1 || resourceAtCap("wood");
-      btn.textContent = game.upgrades.stoneAxe ? "Chop Wood" : "Gather Wood";
-    }
+  groupEls.forEach(groupEl => {
+    const groupId = groupEl.dataset.actionGroup;
+    groupEl.innerHTML = "";
 
-    if (id === "sellWood") {
-      disabled = game.resources.wood.amount < 1;
-    }
+    Object.entries(actions).forEach(([actionId, action]) => {
+      if (action.group !== groupId) return;
 
-    if (id === "restInn") {
-      disabled = game.resources.gold.amount < 1;
-    }
+      const button = document.createElement("button");
+      button.className = "action-button";
+      button.type = "button";
+      button.dataset.action = actionId;
 
-    if (id === "muckStables") {
-      disabled = game.player.stamina < 1;
-    }
+      groupEl.appendChild(button);
+    });
+  });
+};
 
-    if (id === "hireLaborer") {
-      disabled = game.resources.gold.amount < 25;
-    }
+window.renderActionGroups = function () {
+  const buttons = document.querySelectorAll("[data-action]");
 
-    if (id === "buyCoinPurse") {
-      disabled =
-        game.upgrades.coinPursePurchases >= game.upgrades.coinPurseMax ||
-        game.resources.gold.amount < 10;
-    }
+  buttons.forEach(button => {
+    const actionId = button.dataset.action;
+    const action = actions[actionId];
+    if (!action) return;
 
-    if (id === "buyWoodBundle") {
-      disabled =
-        game.upgrades.woodBundlePurchases >= game.upgrades.woodBundleMax ||
-        game.resources.gold.amount < 10;
+    const visible = action.isVisible ? action.isVisible() : true;
+    button.classList.toggle("is-hidden", !visible);
 
-      btn.textContent =
-        game.upgrades.woodBundlePurchases >= game.upgrades.woodBundleMax
-          ? "Wood Bundle (Maxed)"
-          : "Wood Bundle (-10 Gold)";
-    }
+    if (!visible) return;
 
-    if (id === "buyStoneAxe") {
-      disabled =
-        game.upgrades.stoneAxe ||
-        game.resources.gold.amount < 10;
-    }
+    button.textContent =
+      typeof action.label === "function" ? action.label() : action.label;
 
-    btn.disabled = disabled;
+    button.disabled = action.isDisabled ? action.isDisabled() : false;
   });
 };
 
 window.render = function () {
+  if (typeof updateTabVisibility === "function") {
+    updateTabVisibility();
+  }
+
+  if (typeof setActiveTab === "function" && game.activeTab) {
+    setActiveTab(game.activeTab);
+  }
+
   renderResources();
   renderVitals();
   renderLog();
-  renderActions();
+  renderActionGroups();
 };

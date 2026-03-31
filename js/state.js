@@ -14,23 +14,50 @@ window.game = {
   },
   resources: {
     gold: { amount: 0, max: 10, hidden: false },
+    scrolls: { amount: 0, max: 10, hidden: true },
     wood: { amount: 0, max: 5, hidden: true },
-    scrolls: { amount: 0, max: 99, hidden: true }
+    stone: { amount: 0, max: 5, hidden: true },
+    herbs: { amount: 0, max: 5, hidden: true },
   },
   upgrades: {
+    // Gold storage
     coinPursePurchases: 0,
     coinPurseMax: 2,
+
+    // Wood Storage
     woodBundlePurchases: 0,
     woodBundleMax: 2,
-    stoneAxe: false
-  },
-  workers: {
-    laborers: 0
+
+    // Stone Storage
+    stoneCartPurchases: 0,
+    stoneCartMax: 2,
+
+    // Herb Storage
+    herbPouchPurchases: 0,
+    herbPouchMax: 2,
+
+    // Wood gather improvements
+    stoneAxe: false,
+    // Stone gather improvements
+    pickaxe: false,
+    // Herb gather improvements
+    herbShears: false
   },
   timers: {
-    rumorSearches: 0,
-    workSearches: 0
+    rumorSearches: 0
   },
+  unlocks: {
+    // tabs
+    village: false,
+    character: false,
+    // Village Locations
+    inn: false,
+    market: false,
+    blacksmith: false,
+    mason: false,
+    herbalist: false
+  },
+  activeTab: "wilds",
   log: [
     "You awaken battered and exhausted in a world that is not your own."
   ]
