@@ -12,27 +12,50 @@ window.game = {
     mana: 0,
     maxMana: 0
   },
+  vitals: {
+    life: {
+      label: "Life",
+      currentKey: "life",
+      maxKey: "maxLife",
+      fillClass: "bar-fill-life",
+      hidden: false
+    },
+    stamina: {
+      label: "Stamina",
+      currentKey: "stamina",
+      maxKey: "maxStamina",
+      fillClass: "bar-fill-stamina",
+      hidden: false
+    },
+    mana: {
+      label: "Mana",
+      currentKey: "mana",
+      maxKey: "maxMana",
+      fillClass: "bar-fill-mana",
+      hidden: true
+    }
+  },
   resources: {
     gold: { amount: 0, max: 10, hidden: false },
-    scrolls: { amount: 0, max: 10, hidden: true },
     wood: { amount: 0, max: 5, hidden: true },
     stone: { amount: 0, max: 5, hidden: true },
     herbs: { amount: 0, max: 5, hidden: true },
+    scrolls: { amount: 0, max: 10, hidden: true }
   },
   upgrades: {
     // Gold storage
     coinPursePurchases: 0,
     coinPurseMax: 2,
 
-    // Wood Storage
+    // Wood storage
     woodBundlePurchases: 0,
     woodBundleMax: 2,
 
-    // Stone Storage
+    // Stone storage
     stoneCartPurchases: 0,
     stoneCartMax: 2,
 
-    // Herb Storage
+    // Herb storage
     herbPouchPurchases: 0,
     herbPouchMax: 2,
 
@@ -65,6 +88,7 @@ window.game = {
 
 window.uiRefs = {};
 window.resourceCards = {};
+window.vitalCards = {};
 
 window.clamp = function (value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -121,6 +145,28 @@ window.restoreLife = function (amount) {
     0,
     game.player.maxLife
   );
+};
+
+window.restoreMana = function (amount) {
+  game.player.mana = clamp(
+    game.player.mana + amount,
+    0,
+    game.player.maxMana
+  );
+
+  if (game.player.maxMana > 0) {
+    game.vitals.mana.hidden = false;
+  }
+};
+
+window.setMaxMana = function (amount, keepCurrent = false) {
+  game.player.maxMana = Math.max(0, amount);
+
+  if (!keepCurrent) {
+    game.player.mana = clamp(game.player.mana, 0, game.player.maxMana);
+  }
+
+  game.vitals.mana.hidden = game.player.maxMana <= 0;
 };
 
 window.gainGold = function (amount) {

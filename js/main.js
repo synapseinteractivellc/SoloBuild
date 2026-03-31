@@ -6,17 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
   uiRefs.playerLevel = document.getElementById("player-level");
   uiRefs.playerXp = document.getElementById("player-xp");
   uiRefs.playerTitles = document.getElementById("player-titles");
-
-  uiRefs.lifeFill = document.getElementById("life-fill");
-  uiRefs.lifeText = document.getElementById("life-text");
-
-  uiRefs.staminaFill = document.getElementById("stamina-fill");
-  uiRefs.staminaText = document.getElementById("stamina-text");
-
-  uiRefs.manaCard = document.querySelector('[data-stat="mana"]');
-  uiRefs.manaFill = document.getElementById("mana-fill");
-  uiRefs.manaText = document.getElementById("mana-text");
-
   uiRefs.eventLog = document.getElementById("event-log");
 
   uiRefs.tabButtons = {
@@ -125,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   initializeResourceCards();
+  initializeVitalCards();
   initializeActionGroups();
 
   updateTabVisibility();

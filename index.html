@@ -143,32 +143,7 @@
 
       <aside class="panel stats-panel" aria-labelledby="stats-heading">
         <h2 id="stats-heading" class="panel-title">Vitals</h2>
-
-        <div class="stat-stack">
-          <div class="stat-card stat-inline">
-            <span class="stat-label">Life:</span>
-            <div class="bar">
-              <div id="life-fill" class="bar-fill bar-fill-life" style="width: 10%;"></div>
-              <span id="life-text" class="bar-text">1 / 10</span>
-            </div>
-          </div>
-
-          <div class="stat-card stat-inline">
-            <span class="stat-label">Stamina:</span>
-            <div class="bar">
-              <div id="stamina-fill" class="bar-fill bar-fill-stamina" style="width: 10%;"></div>
-              <span id="stamina-text" class="bar-text">1 / 10</span>
-            </div>
-          </div>
-
-          <div class="stat-card stat-inline is-hidden" data-stat="mana">
-            <span class="stat-label">Mana:</span>
-            <div class="bar">
-              <div id="mana-fill" class="bar-fill bar-fill-mana" style="width: 0%;"></div>
-              <span id="mana-text" class="bar-text">0 / 0</span>
-            </div>
-          </div>
-        </div>
+        <div id="vital-list" class="stat-stack"></div>
       </aside>
 
       <aside class="panel event-log-panel" aria-labelledby="event-log-heading">

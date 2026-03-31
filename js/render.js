@@ -40,6 +40,57 @@ window.initializeResourceCards = function () {
   });
 };
 
+window.createVitalCard = function (id, vital) {
+  const card = document.createElement("div");
+  card.className = "stat-card stat-inline";
+  card.dataset.vital = id;
+
+  const label = document.createElement("span");
+  label.className = "stat-label";
+  label.textContent = `${vital.label}:`;
+
+  const bar = document.createElement("div");
+  bar.className = "bar";
+
+  const fill = document.createElement("div");
+  fill.className = `bar-fill ${vital.fillClass}`;
+
+  const text = document.createElement("span");
+  text.className = "bar-text";
+  text.textContent = "0 / 0";
+
+  bar.appendChild(fill);
+  bar.appendChild(text);
+
+  card.appendChild(label);
+  card.appendChild(bar);
+
+  return {
+    card,
+    fill,
+    text
+  };
+};
+
+window.initializeVitalCards = function () {
+  const vitalList = document.getElementById("vital-list");
+  if (!vitalList) return;
+
+  vitalList.innerHTML = "";
+  window.vitalCards = {};
+
+  Object.entries(game.vitals).forEach(([id, vital]) => {
+    const refs = createVitalCard(id, vital);
+
+    if (vital.hidden) {
+      refs.card.classList.add("is-hidden");
+    }
+
+    vitalList.appendChild(refs.card);
+    vitalCards[id] = refs;
+  });
+};
+
 window.renderResources = function () {
   Object.entries(game.resources).forEach(([id, r]) => {
     const card = resourceCards[id];
@@ -52,14 +103,18 @@ window.renderResources = function () {
 };
 
 window.renderVitals = function () {
-  const lifePct = (game.player.life / game.player.maxLife) * 100;
-  const stamPct = (game.player.stamina / game.player.maxStamina) * 100;
+  Object.entries(game.vitals).forEach(([id, vital]) => {
+    const refs = vitalCards[id];
+    if (!refs) return;
 
-  uiRefs.lifeFill.style.width = `${lifePct}%`;
-  uiRefs.lifeText.textContent = `${game.player.life} / ${game.player.maxLife}`;
+    const current = game.player[vital.currentKey];
+    const max = game.player[vital.maxKey];
+    const pct = max > 0 ? (current / max) * 100 : 0;
 
-  uiRefs.staminaFill.style.width = `${stamPct}%`;
-  uiRefs.staminaText.textContent = `${game.player.stamina} / ${game.player.maxStamina}`;
+    refs.card.classList.toggle("is-hidden", vital.hidden);
+    refs.fill.style.width = `${pct}%`;
+    refs.text.textContent = `${formatNumber(current)} / ${formatNumber(max)}`;
+  });
 };
 
 window.renderLog = function () {
