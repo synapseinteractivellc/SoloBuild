@@ -19,12 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   uiRefs.eventLog = document.getElementById("event-log");
 
-  resourceCards.gold = document.querySelector('[data-resource="gold"]');
-  resourceCards.scrolls = document.querySelector('[data-resource="scrolls"]');
-  resourceCards.wood = document.querySelector('[data-resource="wood"]');
-  resourceCards.stone = document.querySelector('[data-resource="stone"]');
-  resourceCards.herbs = document.querySelector('[data-resource="herbs"]');
-
   uiRefs.tabButtons = {
     wilds: document.querySelector('[data-tab="wilds"]'),
     village: document.querySelector('[data-tab="village"]'),
@@ -130,24 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
     render();
   });
 
+  initializeResourceCards();
   initializeActionGroups();
-
-  setInterval(() => {
-    let changed = false;
-
-    const woodPerSecond = game.workers.laborers * 0.1;
-
-    if (woodPerSecond > 0 && !resourceAtCap("wood")) {
-      const gained = addResource("wood", woodPerSecond);
-      if (gained > 0) {
-        changed = true;
-      }
-    }
-
-    if (changed) {
-      render();
-    }
-  }, 1000);
 
   updateTabVisibility();
   setActiveTab(game.activeTab || "wilds");

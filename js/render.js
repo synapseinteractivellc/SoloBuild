@@ -1,3 +1,45 @@
+window.getResourceLabel = function (id) {
+  return id.charAt(0).toUpperCase() + id.slice(1);
+};
+
+window.createResourceCard = function (id) {
+  const card = document.createElement("div");
+  card.className = "resource-card resource-inline";
+  card.dataset.resource = id;
+
+  const name = document.createElement("span");
+  name.className = "resource-name";
+  name.textContent = `${getResourceLabel(id)}:`;
+
+  const value = document.createElement("span");
+  value.className = "resource-value";
+  value.textContent = "0 / 0";
+
+  card.appendChild(name);
+  card.appendChild(value);
+
+  return card;
+};
+
+window.initializeResourceCards = function () {
+  const resourceList = document.getElementById("resource-list");
+  if (!resourceList) return;
+
+  resourceList.innerHTML = "";
+  window.resourceCards = {};
+
+  Object.entries(game.resources).forEach(([id, resource]) => {
+    const card = createResourceCard(id);
+
+    if (resource.hidden) {
+      card.classList.add("is-hidden");
+    }
+
+    resourceList.appendChild(card);
+    resourceCards[id] = card;
+  });
+};
+
 window.renderResources = function () {
   Object.entries(game.resources).forEach(([id, r]) => {
     const card = resourceCards[id];
