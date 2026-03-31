@@ -144,7 +144,7 @@ window.actions = {
         return;
       }
 
-      const herbAmount = game.upgrades.herbPouch ? 2 : 1;
+      const herbAmount = game.upgrades.herbShears ? 2 : 1;
       const gained = addResource("herbs", herbAmount);
 
       addLog(
