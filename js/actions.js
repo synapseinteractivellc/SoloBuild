@@ -30,9 +30,14 @@ window.actions = {
   initialWander: {
     label: "Wander",
     group: "wilds-exploration",
-    isVisible: () => !game.unlocks.village,
-    isDisabled: () => game.player.stamina < 1 || game.encounter.active,
+    isVisible: () => !getGame().unlocks.village,
+    isDisabled: () => {
+      const game = getGame();
+      return game.player.stamina < 1 || game.encounter.active;
+    },
     run() {
+      const game = getGame();
+
       if (!spendStamina(1)) {
         addLog("Too exhausted to wander. You need rest.");
         return;
@@ -63,22 +68,28 @@ window.actions = {
   exploreWilds: {
     label: "Explore",
     group: "wilds-exploration",
-    isVisible: () => game.unlocks.village,
-    isDisabled: () => game.encounter.active,
+    isVisible: () => getGame().unlocks.village,
+    isDisabled: () => getGame().encounter.active,
     run() {
       resolveExploreOutcome();
     }
   },
 
   gatherWood: {
-    label: () => (game.upgrades.stoneAxe ? "Chop Wood" : "Gather Wood"),
+    label: () => (getGame().upgrades.stoneAxe ? "Chop Wood" : "Gather Wood"),
     group: "wilds-survival",
     isVisible: () => true,
-    isDisabled: () =>
-      game.encounter.active ||
-      game.player.stamina < 1 ||
-      resourceAtCap("wood"),
+    isDisabled: () => {
+      const game = getGame();
+      return (
+        game.encounter.active ||
+        game.player.stamina < 1 ||
+        resourceAtCap("wood")
+      );
+    },
     run() {
+      const game = getGame();
+
       if (!spendStamina(1)) {
         addLog("Too exhausted to gather wood.");
         return;
@@ -109,12 +120,18 @@ window.actions = {
   gatherStone: {
     label: "Gather Stone",
     group: "wilds-survival",
-    isVisible: () => game.unlocks.mason,
-    isDisabled: () =>
-      game.encounter.active ||
-      game.player.stamina < 1 ||
-      resourceAtCap("stone"),
+    isVisible: () => getGame().unlocks.mason,
+    isDisabled: () => {
+      const game = getGame();
+      return (
+        game.encounter.active ||
+        game.player.stamina < 1 ||
+        resourceAtCap("stone")
+      );
+    },
     run() {
+      const game = getGame();
+
       if (!spendStamina(1)) {
         addLog("Too exhausted to gather stone.");
         return;
@@ -140,12 +157,18 @@ window.actions = {
   forageHerbs: {
     label: "Forage Herbs",
     group: "wilds-survival",
-    isVisible: () => game.unlocks.herbalist,
-    isDisabled: () =>
-      game.encounter.active ||
-      game.player.stamina < 1 ||
-      resourceAtCap("herbs"),
+    isVisible: () => getGame().unlocks.herbalist,
+    isDisabled: () => {
+      const game = getGame();
+      return (
+        game.encounter.active ||
+        game.player.stamina < 1 ||
+        resourceAtCap("herbs")
+      );
+    },
     run() {
+      const game = getGame();
+
       if (!spendStamina(1)) {
         addLog("Too exhausted to forage for herbs.");
         return;
@@ -177,7 +200,7 @@ window.actions = {
     label: "Rest",
     group: "wilds-survival",
     isVisible: () => true,
-    isDisabled: () => game.encounter.active,
+    isDisabled: () => getGame().encounter.active,
     run() {
       restoreStamina(0.5);
       restoreLife(0.5);
@@ -187,6 +210,7 @@ window.actions = {
 
   wanderVillage: {
     label: () => {
+      const game = getGame();
       const allFound =
         game.unlocks.inn &&
         game.unlocks.market &&
@@ -197,8 +221,9 @@ window.actions = {
       return allFound ? "Village Fully Explored" : "Wander the Village";
     },
     group: "village-wander",
-    isVisible: () => game.unlocks.village,
+    isVisible: () => getGame().unlocks.village,
     isDisabled: () => {
+      const game = getGame();
       const allFound =
         game.unlocks.inn &&
         game.unlocks.market &&
@@ -209,6 +234,8 @@ window.actions = {
       return game.player.stamina < 1 || allFound;
     },
     run() {
+      const game = getGame();
+
       if (!spendStamina(1)) {
         addLog("Too tired to keep wandering the village.");
         return;
@@ -260,7 +287,7 @@ window.actions = {
         return;
       }
 
-      if (Math.random() < 0.70) {
+      if (Math.random() < 0.7) {
         const discovered =
           remainingLocations[
             Math.floor(Math.random() * remainingLocations.length)
@@ -278,11 +305,17 @@ window.actions = {
   sleepInAlley: {
     label: "Sleep in Alley",
     group: "village-wander",
-    isVisible: () =>
-      game.unlocks.village &&
-      (game.resources.gold.amount < 1 || !game.unlocks.inn),
+    isVisible: () => {
+      const game = getGame();
+      return (
+        game.unlocks.village &&
+        (game.resources.gold.amount < 1 || !game.unlocks.inn)
+      );
+    },
     isDisabled: () => false,
     run() {
+      const game = getGame();
+
       restoreStamina(2);
 
       const badOutcomeRoll = Math.random();
@@ -295,8 +328,9 @@ window.actions = {
         return;
       }
 
-      if (badOutcomeRoll < 0.30) {
+      if (badOutcomeRoll < 0.3) {
         const currentGold = game.resources.gold.amount;
+
         if (currentGold > 0) {
           const amountLost = Math.max(1, Math.floor(currentGold / 2));
           spendResource("gold", amountLost);
@@ -316,8 +350,11 @@ window.actions = {
   muckStables: {
     label: "Muck Stables",
     group: "village-work",
-    isVisible: () => game.unlocks.village && game.unlocks.inn,
-    isDisabled: () => game.player.stamina < 1,
+    isVisible: () => {
+      const game = getGame();
+      return game.unlocks.village && game.unlocks.inn;
+    },
+    isDisabled: () => getGame().player.stamina < 1,
     run() {
       if (!spendStamina(1)) {
         addLog("Too exhausted.");
@@ -332,9 +369,14 @@ window.actions = {
   lookForWork: {
     label: "Look for Work",
     group: "village-work",
-    isVisible: () => game.unlocks.village && game.unlocks.market,
-    isDisabled: () => game.player.stamina < 1,
+    isVisible: () => {
+      const game = getGame();
+      return game.unlocks.village && game.unlocks.market;
+    },
+    isDisabled: () => getGame().player.stamina < 1,
     run() {
+      const game = getGame();
+
       if (!spendStamina(1)) {
         addLog("Too tired.");
         return;
@@ -354,9 +396,14 @@ window.actions = {
   rumors: {
     label: "Rumors",
     group: "village-work",
-    isVisible: () => game.unlocks.village && game.unlocks.inn,
+    isVisible: () => {
+      const game = getGame();
+      return game.unlocks.village && game.unlocks.inn;
+    },
     isDisabled: () => false,
     run() {
+      const game = getGame();
+
       game.timers.rumorSearches++;
 
       if (game.timers.rumorSearches >= 10) {
@@ -375,8 +422,11 @@ window.actions = {
   restInn: {
     label: "Rest in Inn",
     group: "village-market",
-    isVisible: () => game.unlocks.village && game.unlocks.inn,
-    isDisabled: () => game.resources.gold.amount < 1,
+    isVisible: () => {
+      const game = getGame();
+      return game.unlocks.village && game.unlocks.inn;
+    },
+    isDisabled: () => getGame().resources.gold.amount < 1,
     run() {
       if (!spendResource("gold", 1)) {
         addLog("Not enough gold.");
@@ -392,8 +442,11 @@ window.actions = {
   sellWood: {
     label: "Sell Wood",
     group: "village-market",
-    isVisible: () => game.unlocks.village && game.unlocks.market,
-    isDisabled: () => game.resources.wood.amount < 1,
+    isVisible: () => {
+      const game = getGame();
+      return game.unlocks.village && game.unlocks.market;
+    },
+    isDisabled: () => getGame().resources.wood.amount < 1,
     run() {
       if (!spendResource("wood", 1)) {
         addLog("No wood to sell.");
@@ -408,14 +461,24 @@ window.actions = {
   buyCoinPurse: {
     label: "Coin Purse (-10 Gold)",
     group: "village-upgrades",
-    isVisible: () =>
-      game.unlocks.village &&
-      game.unlocks.market &&
-      game.upgrades.coinPursePurchases < game.upgrades.coinPurseMax,
-    isDisabled: () =>
-      game.upgrades.coinPursePurchases >= game.upgrades.coinPurseMax ||
-      game.resources.gold.amount < 10,
+    isVisible: () => {
+      const game = getGame();
+      return (
+        game.unlocks.village &&
+        game.unlocks.market &&
+        game.upgrades.coinPursePurchases < game.upgrades.coinPurseMax
+      );
+    },
+    isDisabled: () => {
+      const game = getGame();
+      return (
+        game.upgrades.coinPursePurchases >= game.upgrades.coinPurseMax ||
+        game.resources.gold.amount < 10
+      );
+    },
     run() {
+      const game = getGame();
+
       if (game.upgrades.coinPursePurchases >= game.upgrades.coinPurseMax) {
         addLog("Coin Purse already maxed.");
         return;
@@ -436,14 +499,24 @@ window.actions = {
   buyWoodBundle: {
     label: "Wood Bundle (-10 Gold)",
     group: "village-upgrades",
-    isVisible: () =>
-      game.unlocks.village &&
-      game.unlocks.market &&
-      game.upgrades.woodBundlePurchases < game.upgrades.woodBundleMax,
-    isDisabled: () =>
-      game.upgrades.woodBundlePurchases >= game.upgrades.woodBundleMax ||
-      game.resources.gold.amount < 10,
+    isVisible: () => {
+      const game = getGame();
+      return (
+        game.unlocks.village &&
+        game.unlocks.market &&
+        game.upgrades.woodBundlePurchases < game.upgrades.woodBundleMax
+      );
+    },
+    isDisabled: () => {
+      const game = getGame();
+      return (
+        game.upgrades.woodBundlePurchases >= game.upgrades.woodBundleMax ||
+        game.resources.gold.amount < 10
+      );
+    },
     run() {
+      const game = getGame();
+
       if (game.upgrades.woodBundlePurchases >= game.upgrades.woodBundleMax) {
         addLog("Wood Bundle already maxed.");
         return;
@@ -464,13 +537,17 @@ window.actions = {
   buyStoneAxe: {
     label: "Stone Axe (-10 Gold)",
     group: "village-upgrades",
-    isVisible: () =>
-      game.unlocks.village &&
-      game.unlocks.blacksmith &&
-      !game.upgrades.stoneAxe,
-    isDisabled: () =>
-      game.upgrades.stoneAxe || game.resources.gold.amount < 10,
+    isVisible: () => {
+      const game = getGame();
+      return game.unlocks.village && game.unlocks.blacksmith && !game.upgrades.stoneAxe;
+    },
+    isDisabled: () => {
+      const game = getGame();
+      return game.upgrades.stoneAxe || game.resources.gold.amount < 10;
+    },
     run() {
+      const game = getGame();
+
       if (game.upgrades.stoneAxe) {
         addLog("Already have a Stone Axe.");
         return;
@@ -489,8 +566,11 @@ window.actions = {
   sellStone: {
     label: "Sell Stone",
     group: "village-market",
-    isVisible: () => game.unlocks.village && game.unlocks.mason,
-    isDisabled: () => game.resources.stone.amount < 1,
+    isVisible: () => {
+      const game = getGame();
+      return game.unlocks.village && game.unlocks.mason;
+    },
+    isDisabled: () => getGame().resources.stone.amount < 1,
     run() {
       if (!spendResource("stone", 1)) {
         addLog("No stone to sell.");
@@ -505,8 +585,11 @@ window.actions = {
   sellHerbs: {
     label: "Sell Herbs",
     group: "village-market",
-    isVisible: () => game.unlocks.village && game.unlocks.herbalist,
-    isDisabled: () => game.resources.herbs.amount < 1,
+    isVisible: () => {
+      const game = getGame();
+      return game.unlocks.village && game.unlocks.herbalist;
+    },
+    isDisabled: () => getGame().resources.herbs.amount < 1,
     run() {
       if (!spendResource("herbs", 1)) {
         addLog("No herbs to sell.");
@@ -521,13 +604,17 @@ window.actions = {
   buyPickaxe: {
     label: "Pickaxe (-10 Gold)",
     group: "village-upgrades",
-    isVisible: () =>
-      game.unlocks.village &&
-      game.unlocks.mason &&
-      !game.upgrades.pickaxe,
-    isDisabled: () =>
-      game.upgrades.pickaxe || game.resources.gold.amount < 10,
+    isVisible: () => {
+      const game = getGame();
+      return game.unlocks.village && game.unlocks.mason && !game.upgrades.pickaxe;
+    },
+    isDisabled: () => {
+      const game = getGame();
+      return game.upgrades.pickaxe || game.resources.gold.amount < 10;
+    },
     run() {
+      const game = getGame();
+
       if (game.upgrades.pickaxe) {
         addLog("You already have a pickaxe.");
         return;
@@ -546,13 +633,17 @@ window.actions = {
   buyHerbShears: {
     label: "Herb Shears (-10 Gold)",
     group: "village-upgrades",
-    isVisible: () =>
-      game.unlocks.village &&
-      game.unlocks.herbalist &&
-      !game.upgrades.herbShears,
-    isDisabled: () =>
-      game.upgrades.herbShears || game.resources.gold.amount < 10,
+    isVisible: () => {
+      const game = getGame();
+      return game.unlocks.village && game.unlocks.herbalist && !game.upgrades.herbShears;
+    },
+    isDisabled: () => {
+      const game = getGame();
+      return game.upgrades.herbShears || game.resources.gold.amount < 10;
+    },
     run() {
+      const game = getGame();
+
       if (game.upgrades.herbShears) {
         addLog("You already have herb shears.");
         return;
@@ -571,14 +662,24 @@ window.actions = {
   buyStoneCart: {
     label: "Stone Cart (-10 Gold)",
     group: "village-upgrades",
-    isVisible: () =>
-      game.unlocks.village &&
-      game.unlocks.mason &&
-      game.upgrades.stoneCartPurchases < game.upgrades.stoneCartMax,
-    isDisabled: () =>
-      game.upgrades.stoneCartPurchases >= game.upgrades.stoneCartMax ||
-      game.resources.gold.amount < 10,
+    isVisible: () => {
+      const game = getGame();
+      return (
+        game.unlocks.village &&
+        game.unlocks.mason &&
+        game.upgrades.stoneCartPurchases < game.upgrades.stoneCartMax
+      );
+    },
+    isDisabled: () => {
+      const game = getGame();
+      return (
+        game.upgrades.stoneCartPurchases >= game.upgrades.stoneCartMax ||
+        game.resources.gold.amount < 10
+      );
+    },
     run() {
+      const game = getGame();
+
       if (game.upgrades.stoneCartPurchases >= game.upgrades.stoneCartMax) {
         addLog("Stone Cart already maxed.");
         return;
@@ -599,14 +700,24 @@ window.actions = {
   buyHerbPouch: {
     label: "Herb Pouch (-10 Gold)",
     group: "village-upgrades",
-    isVisible: () =>
-      game.unlocks.village &&
-      game.unlocks.herbalist &&
-      game.upgrades.herbPouchPurchases < game.upgrades.herbPouchMax,
-    isDisabled: () =>
-      game.upgrades.herbPouchPurchases >= game.upgrades.herbPouchMax ||
-      game.resources.gold.amount < 10,
+    isVisible: () => {
+      const game = getGame();
+      return (
+        game.unlocks.village &&
+        game.unlocks.herbalist &&
+        game.upgrades.herbPouchPurchases < game.upgrades.herbPouchMax
+      );
+    },
+    isDisabled: () => {
+      const game = getGame();
+      return (
+        game.upgrades.herbPouchPurchases >= game.upgrades.herbPouchMax ||
+        game.resources.gold.amount < 10
+      );
+    },
     run() {
+      const game = getGame();
+
       if (game.upgrades.herbPouchPurchases >= game.upgrades.herbPouchMax) {
         addLog("Herb Pouch already maxed.");
         return;

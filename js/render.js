@@ -1,3 +1,35 @@
+const renderState = {
+  uiRefs: {},
+  resourceCards: {},
+  vitalCards: {}
+};
+
+window.getUiRefs = function () {
+  return renderState.uiRefs;
+};
+
+window.getResourceCards = function () {
+  return renderState.resourceCards;
+};
+
+window.getVitalCards = function () {
+  return renderState.vitalCards;
+};
+
+window.initializeRenderRefs = function () {
+  renderState.uiRefs.playerName = document.getElementById("player-name");
+  renderState.uiRefs.playerLevel = document.getElementById("player-level");
+  renderState.uiRefs.playerXp = document.getElementById("player-xp");
+  renderState.uiRefs.playerTitles = document.getElementById("player-titles");
+  renderState.uiRefs.eventLog = document.getElementById("event-log");
+
+  renderState.uiRefs.tabButtons = {
+    wilds: document.querySelector('[data-tab="wilds"]'),
+    village: document.querySelector('[data-tab="village"]'),
+    character: document.querySelector('[data-tab="character"]')
+  };
+};
+
 window.getResourceLabel = function (id) {
   const labels = {
     gold: "Gold",
@@ -32,11 +64,13 @@ window.createResourceCard = function (id) {
 };
 
 window.initializeResourceCards = function () {
+  const game = getGame();
   const resourceList = document.getElementById("resource-list");
+
   if (!resourceList) return;
 
   resourceList.innerHTML = "";
-  window.resourceCards = {};
+  renderState.resourceCards = {};
 
   Object.entries(game.resources).forEach(([id, resource]) => {
     const card = createResourceCard(id);
@@ -46,7 +80,7 @@ window.initializeResourceCards = function () {
     }
 
     resourceList.appendChild(card);
-    resourceCards[id] = card;
+    renderState.resourceCards[id] = card;
   });
 };
 
@@ -83,11 +117,13 @@ window.createVitalCard = function (id, vital) {
 };
 
 window.initializeVitalCards = function () {
+  const game = getGame();
   const vitalList = document.getElementById("vital-list");
+
   if (!vitalList) return;
 
   vitalList.innerHTML = "";
-  window.vitalCards = {};
+  renderState.vitalCards = {};
 
   Object.entries(game.vitals).forEach(([id, vital]) => {
     const refs = createVitalCard(id, vital);
@@ -97,44 +133,7 @@ window.initializeVitalCards = function () {
     }
 
     vitalList.appendChild(refs.card);
-    vitalCards[id] = refs;
-  });
-};
-
-window.renderResources = function () {
-  Object.entries(game.resources).forEach(([id, r]) => {
-    const card = resourceCards[id];
-    if (!card) return;
-
-    card.classList.toggle("is-hidden", r.hidden);
-    card.querySelector(".resource-value").textContent =
-      `${formatNumber(r.amount)} / ${r.max}`;
-  });
-};
-
-window.renderVitals = function () {
-  Object.entries(game.vitals).forEach(([id, vital]) => {
-    const refs = vitalCards[id];
-    if (!refs) return;
-
-    const current = game.player[vital.currentKey];
-    const max = game.player[vital.maxKey];
-    const pct = max > 0 ? (current / max) * 100 : 0;
-
-    refs.card.classList.toggle("is-hidden", vital.hidden);
-    refs.fill.style.width = `${pct}%`;
-    refs.text.textContent = `${formatNumber(current)} / ${formatNumber(max)}`;
-  });
-};
-
-window.renderLog = function () {
-  uiRefs.eventLog.innerHTML = "";
-
-  game.log.forEach(msg => {
-    const div = document.createElement("div");
-    div.className = "log-entry";
-    div.textContent = msg;
-    uiRefs.eventLog.appendChild(div);
+    renderState.vitalCards[id] = refs;
   });
 };
 
@@ -158,12 +157,99 @@ window.initializeActionGroups = function () {
   });
 };
 
+window.updateTabVisibility = function () {
+  const game = getGame();
+  const uiRefs = getUiRefs();
+
+  if (uiRefs.tabButtons?.village) {
+    uiRefs.tabButtons.village.classList.toggle("is-hidden", !game.unlocks.village);
+  }
+
+  if (uiRefs.tabButtons?.character) {
+    uiRefs.tabButtons.character.classList.toggle("is-hidden", !game.unlocks.character);
+  }
+
+  const activeButton = uiRefs.tabButtons?.[game.activeTab];
+  if (!activeButton || activeButton.classList.contains("is-hidden")) {
+    game.activeTab = "wilds";
+  }
+};
+
+window.setActiveTab = function (tabId) {
+  const game = getGame();
+  const tabButtons = Array.from(document.querySelectorAll(".tab-button"));
+  const tabPanels = Array.from(document.querySelectorAll(".tab-content"));
+
+  game.activeTab = tabId;
+
+  tabButtons.forEach(button => {
+    const isActive = button.dataset.tab === tabId;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-selected", String(isActive));
+    button.setAttribute("tabindex", isActive ? "0" : "-1");
+  });
+
+  tabPanels.forEach(panel => {
+    const isActive = panel.id === `${tabId}-tab`;
+    panel.classList.toggle("is-hidden", !isActive);
+  });
+};
+
+window.renderResources = function () {
+  const game = getGame();
+  const resourceCards = getResourceCards();
+
+  Object.entries(game.resources).forEach(([id, resource]) => {
+    const card = resourceCards[id];
+    if (!card) return;
+
+    card.classList.toggle("is-hidden", resource.hidden);
+    card.querySelector(".resource-value").textContent =
+      `${formatNumber(resource.amount)} / ${resource.max}`;
+  });
+};
+
+window.renderVitals = function () {
+  const game = getGame();
+  const vitalCards = getVitalCards();
+
+  Object.entries(game.vitals).forEach(([id, vital]) => {
+    const refs = vitalCards[id];
+    if (!refs) return;
+
+    const current = game.player[vital.currentKey];
+    const max = game.player[vital.maxKey];
+    const pct = max > 0 ? (current / max) * 100 : 0;
+
+    refs.card.classList.toggle("is-hidden", vital.hidden);
+    refs.fill.style.width = `${pct}%`;
+    refs.text.textContent = `${formatNumber(current)} / ${formatNumber(max)}`;
+  });
+};
+
+window.renderLog = function () {
+  const game = getGame();
+  const uiRefs = getUiRefs();
+
+  if (!uiRefs.eventLog) return;
+
+  uiRefs.eventLog.innerHTML = "";
+
+  game.log.forEach(message => {
+    const div = document.createElement("div");
+    div.className = "log-entry";
+    div.textContent = message;
+    uiRefs.eventLog.appendChild(div);
+  });
+};
+
 window.renderActionGroups = function () {
   const buttons = document.querySelectorAll("[data-action]");
 
   buttons.forEach(button => {
     const actionId = button.dataset.action;
     const action = actions[actionId];
+
     if (!action) return;
 
     const visible = action.isVisible ? action.isVisible() : true;
@@ -179,62 +265,96 @@ window.renderActionGroups = function () {
 };
 
 window.renderEncounterPanel = function () {
+  const game = getGame();
+  const uiRefs = getUiRefs();
   const panel = document.getElementById("wilds-encounter-panel");
+
   if (!panel) return;
 
   const wildsButton = uiRefs.tabButtons?.wilds;
-  const encounterActive = !!(game.encounter && game.encounter.active && game.encounter.enemy);
-  const encounterInWilds = encounterActive && game.encounter.location === "wilds";
+  const encounterActive = !!(
+    game.encounter &&
+    game.encounter.active &&
+    game.encounter.enemy
+  );
+  const encounterInWilds =
+    encounterActive && game.encounter.location === "wilds";
   const offWildsTab = game.activeTab !== "wilds";
 
   panel.classList.toggle("is-hidden", !encounterInWilds);
 
   if (wildsButton) {
-    wildsButton.classList.toggle("has-encounter-alert", encounterInWilds && offWildsTab);
+    wildsButton.classList.toggle(
+      "has-encounter-alert",
+      encounterInWilds && offWildsTab
+    );
   }
 
   if (!encounterInWilds) return;
 
   const enemy = game.encounter.enemy;
-  const playerLifePct = game.player.maxLife > 0 ? (game.player.life / game.player.maxLife) * 100 : 0;
-  const playerStaminaPct = game.player.maxStamina > 0 ? (game.player.stamina / game.player.maxStamina) * 100 : 0;
-  const enemyLifePct = enemy.maxLife > 0 ? (enemy.life / enemy.maxLife) * 100 : 0;
+  const playerLifePct =
+    game.player.maxLife > 0 ? (game.player.life / game.player.maxLife) * 100 : 0;
+  const playerStaminaPct =
+    game.player.maxStamina > 0
+      ? (game.player.stamina / game.player.maxStamina) * 100
+      : 0;
+  const enemyLifePct =
+    enemy.maxLife > 0 ? (enemy.life / enemy.maxLife) * 100 : 0;
 
   const playerTimerPct = clamp(game.encounter.playerActionProgress * 100, 0, 100);
   const enemyTimerPct = clamp(game.encounter.enemyActionProgress * 100, 0, 100);
 
-  document.getElementById("encounter-subtitle").textContent = `${enemy.name} engaged in the wilds.`;
-  document.getElementById("encounter-player-name").textContent = game.player.name || "Wanderer";
-  document.getElementById("encounter-player-life-text").textContent = `${formatNumber(game.player.life)} / ${formatNumber(game.player.maxLife)}`;
-  document.getElementById("encounter-player-stamina-text").textContent = `${formatNumber(game.player.stamina)} / ${formatNumber(game.player.maxStamina)}`;
-  document.getElementById("encounter-player-timer-text").textContent = `${Math.round(playerTimerPct)}%`;
-  document.getElementById("encounter-player-life-fill").style.width = `${playerLifePct}%`;
-  document.getElementById("encounter-player-stamina-fill").style.width = `${playerStaminaPct}%`;
-  document.getElementById("encounter-player-timer-fill").style.width = `${playerTimerPct}%`;
-  document.getElementById("encounter-player-mode").textContent = getPlayerCombatModeLabel();
+  document.getElementById("encounter-subtitle").textContent =
+    `${enemy.name} engaged in the wilds.`;
+  document.getElementById("encounter-player-name").textContent =
+    game.player.name || "Wanderer";
+  document.getElementById("encounter-player-life-text").textContent =
+    `${formatNumber(game.player.life)} / ${formatNumber(game.player.maxLife)}`;
+  document.getElementById("encounter-player-stamina-text").textContent =
+    `${formatNumber(game.player.stamina)} / ${formatNumber(game.player.maxStamina)}`;
+  document.getElementById("encounter-player-timer-text").textContent =
+    `${Math.round(playerTimerPct)}%`;
+  document.getElementById("encounter-player-life-fill").style.width =
+    `${playerLifePct}%`;
+  document.getElementById("encounter-player-stamina-fill").style.width =
+    `${playerStaminaPct}%`;
+  document.getElementById("encounter-player-timer-fill").style.width =
+    `${playerTimerPct}%`;
+  document.getElementById("encounter-player-mode").textContent =
+    getPlayerCombatModeLabel();
 
   document.getElementById("encounter-enemy-name").textContent = enemy.name;
-  document.getElementById("encounter-enemy-life-text").textContent = `${formatNumber(enemy.life)} / ${formatNumber(enemy.maxLife)}`;
-  document.getElementById("encounter-enemy-timer-text").textContent = `${Math.round(enemyTimerPct)}%`;
-  document.getElementById("encounter-enemy-life-fill").style.width = `${enemyLifePct}%`;
-  document.getElementById("encounter-enemy-timer-fill").style.width = `${enemyTimerPct}%`;
+  document.getElementById("encounter-enemy-life-text").textContent =
+    `${formatNumber(enemy.life)} / ${formatNumber(enemy.maxLife)}`;
+  document.getElementById("encounter-enemy-timer-text").textContent =
+    `${Math.round(enemyTimerPct)}%`;
+  document.getElementById("encounter-enemy-life-fill").style.width =
+    `${enemyLifePct}%`;
+  document.getElementById("encounter-enemy-timer-fill").style.width =
+    `${enemyTimerPct}%`;
 
   const modeButtons = document.querySelectorAll("[data-combat-mode]");
   modeButtons.forEach(button => {
     const mode = button.dataset.combatMode;
     const isActive = game.encounter.playerMode === mode;
+
     button.classList.toggle("is-active", isActive);
     button.disabled = mode === "kick" && game.player.stamina < 1;
   });
 };
 
 window.renderCharacterPanel = function () {
+  const game = getGame();
+  const uiRefs = getUiRefs();
+
   if (uiRefs.playerLevel) {
     uiRefs.playerLevel.textContent = String(game.player.level);
   }
 
   if (uiRefs.playerXp) {
-    uiRefs.playerXp.textContent = `${formatNumber(game.player.xp)} / ${formatNumber(game.player.xpToNext)}`;
+    uiRefs.playerXp.textContent =
+      `${formatNumber(game.player.xp)} / ${formatNumber(game.player.xpToNext)}`;
   }
 
   if (uiRefs.playerTitles) {
@@ -248,11 +368,11 @@ window.renderCharacterPanel = function () {
 };
 
 window.render = function () {
-  if (typeof updateTabVisibility === "function") {
-    updateTabVisibility();
-  }
+  const game = getGame();
 
-  if (typeof setActiveTab === "function" && game.activeTab) {
+  updateTabVisibility();
+
+  if (game.activeTab) {
     setActiveTab(game.activeTab);
   }
 
