@@ -63,6 +63,55 @@ window.actions = {
     }
   },
 
+  exploreWilds: {
+    label: "Explore",
+    group: "wilds-exploration",
+    isVisible: () => true,
+    isDisabled: () => game.player.stamina < 1,
+    run() {
+      if (!spendStamina(1)) {
+        addLog("Too exhausted to explore.");
+        return;
+      }
+
+      const rollValue = Math.random();
+
+      if (rollValue < 0.005) {
+        addResource("scrolls", 1);
+        addLog("You found a strange scroll.");
+        return;
+      }
+
+      if (rollValue < 0.01) {
+        addResource("gold", 1);
+        addLog("You found someone's lost coin.");
+        return;
+      }
+
+      if (rollValue < 0.09) {
+        addResource("herbs", 1);
+        addLog("You found a new patch of wild herbs.");
+        return;
+      }
+
+      if (rollValue < 0.25) {
+        addResource("stone", 1);
+        addLog("You found some decent stone.");
+        return;
+      }
+
+      if (rollValue < 0.4) {
+        addResource("wood", 1);
+        addLog("You found some great wood.");
+        return;
+      }
+
+      addLog(
+        "Something moves in the brush. You tense for a fight, but the creature disappears into the wilds."
+      );
+    }
+  },
+
   // =========================
   // Wilds - Survival
   // =========================

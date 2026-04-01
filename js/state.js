@@ -37,10 +37,12 @@ window.game = {
   },
   resources: {
     gold: { amount: 0, max: 10, hidden: false },
+    scrolls: { amount: 0, max: 10, hidden: true },
     wood: { amount: 0, max: 5, hidden: true },
     stone: { amount: 0, max: 5, hidden: true },
     herbs: { amount: 0, max: 5, hidden: true },
-    scrolls: { amount: 0, max: 10, hidden: true }
+    horn: { amount: 0, max: 10, hidden: true},
+    leather: {amount: 0, max: 5, hidden: true},
   },
   upgrades: {
     // Gold storage
