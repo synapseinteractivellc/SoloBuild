@@ -131,6 +131,6 @@ Currently a solo project, but ideas, feedback, and discussion are always welcome
 
 ## 📜 License
 
-MIT
+[MIT](https://github.com/synapseinteractivellc/SoloBuild/blob/main/LICENSE)
 
 ---
