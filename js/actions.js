@@ -27,14 +27,11 @@ const villageDiscoveries = [
 ];
 
 window.actions = {
-  // =========================
-  // Wilds - Exploration
-  // =========================
   initialWander: {
     label: "Wander",
     group: "wilds-exploration",
     isVisible: () => !game.unlocks.village,
-    isDisabled: () => game.player.stamina < 1,
+    isDisabled: () => game.player.stamina < 1 || game.encounter.active,
     run() {
       if (!spendStamina(1)) {
         addLog("Too exhausted to wander. You need rest.");
@@ -66,60 +63,21 @@ window.actions = {
   exploreWilds: {
     label: "Explore",
     group: "wilds-exploration",
-    isVisible: () => true,
-    isDisabled: () => game.player.stamina < 1,
+    isVisible: () => game.unlocks.village,
+    isDisabled: () => game.encounter.active,
     run() {
-      if (!spendStamina(1)) {
-        addLog("Too exhausted to explore.");
-        return;
-      }
-
-      const rollValue = Math.random();
-
-      if (rollValue < 0.005) {
-        addResource("scrolls", 1);
-        addLog("You found a strange scroll.");
-        return;
-      }
-
-      if (rollValue < 0.01) {
-        addResource("gold", 1);
-        addLog("You found someone's lost coin.");
-        return;
-      }
-
-      if (rollValue < 0.09) {
-        addResource("herbs", 1);
-        addLog("You found a new patch of wild herbs.");
-        return;
-      }
-
-      if (rollValue < 0.25) {
-        addResource("stone", 1);
-        addLog("You found some decent stone.");
-        return;
-      }
-
-      if (rollValue < 0.4) {
-        addResource("wood", 1);
-        addLog("You found some great wood.");
-        return;
-      }
-
-      addLog(
-        "Something moves in the brush. You tense for a fight, but the creature disappears into the wilds."
-      );
+      resolveExploreOutcome();
     }
   },
 
-  // =========================
-  // Wilds - Survival
-  // =========================
   gatherWood: {
     label: () => (game.upgrades.stoneAxe ? "Chop Wood" : "Gather Wood"),
     group: "wilds-survival",
     isVisible: () => true,
-    isDisabled: () => game.player.stamina < 1 || resourceAtCap("wood"),
+    isDisabled: () =>
+      game.encounter.active ||
+      game.player.stamina < 1 ||
+      resourceAtCap("wood"),
     run() {
       if (!spendStamina(1)) {
         addLog("Too exhausted to gather wood.");
@@ -152,7 +110,10 @@ window.actions = {
     label: "Gather Stone",
     group: "wilds-survival",
     isVisible: () => game.unlocks.mason,
-    isDisabled: () => game.player.stamina < 1 || resourceAtCap("stone"),
+    isDisabled: () =>
+      game.encounter.active ||
+      game.player.stamina < 1 ||
+      resourceAtCap("stone"),
     run() {
       if (!spendStamina(1)) {
         addLog("Too exhausted to gather stone.");
@@ -180,7 +141,10 @@ window.actions = {
     label: "Forage Herbs",
     group: "wilds-survival",
     isVisible: () => game.unlocks.herbalist,
-    isDisabled: () => game.player.stamina < 1 || resourceAtCap("herbs"),
+    isDisabled: () =>
+      game.encounter.active ||
+      game.player.stamina < 1 ||
+      resourceAtCap("herbs"),
     run() {
       if (!spendStamina(1)) {
         addLog("Too exhausted to forage for herbs.");
@@ -213,7 +177,7 @@ window.actions = {
     label: "Rest",
     group: "wilds-survival",
     isVisible: () => true,
-    isDisabled: () => false,
+    isDisabled: () => game.encounter.active,
     run() {
       restoreStamina(0.5);
       restoreLife(0.5);
@@ -221,9 +185,6 @@ window.actions = {
     }
   },
 
-  // =========================
-  // Village - Exploration
-  // =========================
   wanderVillage: {
     label: () => {
       const allFound =
@@ -256,7 +217,6 @@ window.actions = {
       const currentGold = game.resources.gold.amount;
       const muggedRoll = Math.random();
 
-      // 1% mugging chance
       if (muggedRoll < 0.01) {
         if (currentGold <= 0) {
           addLog(
@@ -278,7 +238,6 @@ window.actions = {
         return;
       }
 
-      // Inn must be found first
       if (!game.unlocks.inn) {
         if (Math.random() < 0.75) {
           game.unlocks.inn = true;
@@ -292,7 +251,6 @@ window.actions = {
         return;
       }
 
-      // After inn is found, discover remaining village locations
       const remainingLocations = villageDiscoveries.filter(
         place => place.key !== "inn" && !game.unlocks[place.key]
       );
@@ -355,9 +313,6 @@ window.actions = {
     }
   },
 
-  // =========================
-  // Village - Work
-  // =========================
   muckStables: {
     label: "Muck Stables",
     group: "village-work",
@@ -417,9 +372,6 @@ window.actions = {
     }
   },
 
-  // =========================
-  // Village - Market
-  // =========================
   restInn: {
     label: "Rest in Inn",
     group: "village-market",
@@ -453,14 +405,12 @@ window.actions = {
     }
   },
 
-  // =========================
-  // Village - Upgrades
-  // =========================
   buyCoinPurse: {
     label: "Coin Purse (-10 Gold)",
     group: "village-upgrades",
-    isVisible: () => game.unlocks.village && 
-      game.unlocks.market && 
+    isVisible: () =>
+      game.unlocks.village &&
+      game.unlocks.market &&
       game.upgrades.coinPursePurchases < game.upgrades.coinPurseMax,
     isDisabled: () =>
       game.upgrades.coinPursePurchases >= game.upgrades.coinPurseMax ||
@@ -486,8 +436,9 @@ window.actions = {
   buyWoodBundle: {
     label: "Wood Bundle (-10 Gold)",
     group: "village-upgrades",
-    isVisible: () => game.unlocks.village && 
-      game.unlocks.market && 
+    isVisible: () =>
+      game.unlocks.village &&
+      game.unlocks.market &&
       game.upgrades.woodBundlePurchases < game.upgrades.woodBundleMax,
     isDisabled: () =>
       game.upgrades.woodBundlePurchases >= game.upgrades.woodBundleMax ||
@@ -513,8 +464,9 @@ window.actions = {
   buyStoneAxe: {
     label: "Stone Axe (-10 Gold)",
     group: "village-upgrades",
-    isVisible: () => game.unlocks.village && 
-      game.unlocks.blacksmith && 
+    isVisible: () =>
+      game.unlocks.village &&
+      game.unlocks.blacksmith &&
       !game.upgrades.stoneAxe,
     isDisabled: () =>
       game.upgrades.stoneAxe || game.resources.gold.amount < 10,
@@ -533,7 +485,6 @@ window.actions = {
       addLog("You now chop wood more efficiently.");
     }
   },
-  
 
   sellStone: {
     label: "Sell Stone",
@@ -671,13 +622,5 @@ window.actions = {
 
       addLog(`Herb capacity increased to ${game.resources.herbs.max}.`);
     }
-  },
-
-  // =========================
-  // Future Areas
-  // =========================
-  // blacksmith actions
-  // mason actions
-  // herbalist actions
-  // character actions
+  }
 };

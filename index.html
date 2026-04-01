@@ -43,6 +43,93 @@
               </p>
             </div>
 
+            <section id="wilds-encounter-panel" class="panel-section encounter-panel is-hidden" aria-live="polite">
+              <div class="encounter-header">
+                <div>
+                  <h3 class="encounter-title">Encounter</h3>
+                  <p id="encounter-subtitle" class="encounter-subtitle">A threat emerges from the wilds.</p>
+                </div>
+                <div class="encounter-status">Idle Combat Active</div>
+              </div>
+
+              <div class="encounter-columns">
+                <section class="encounter-side">
+                  <h4 class="encounter-side-title">Player</h4>
+                  <div class="encounter-combatant-name" id="encounter-player-name">Wanderer</div>
+
+                  <div class="encounter-bar-block">
+                    <div class="encounter-bar-label-row">
+                      <span class="encounter-bar-label">Life</span>
+                      <span id="encounter-player-life-text" class="encounter-bar-value">10 / 10</span>
+                    </div>
+                    <div class="bar encounter-bar">
+                      <div id="encounter-player-life-fill" class="bar-fill bar-fill-life"></div>
+                    </div>
+                  </div>
+
+                  <div class="encounter-bar-block">
+                    <div class="encounter-bar-label-row">
+                      <span class="encounter-bar-label">Stamina</span>
+                      <span id="encounter-player-stamina-text" class="encounter-bar-value">10 / 10</span>
+                    </div>
+                    <div class="bar encounter-bar">
+                      <div id="encounter-player-stamina-fill" class="bar-fill bar-fill-stamina"></div>
+                    </div>
+                  </div>
+
+                  <div class="encounter-bar-block">
+                    <div class="encounter-bar-label-row">
+                      <span class="encounter-bar-label">Action Timer</span>
+                      <span id="encounter-player-timer-text" class="encounter-bar-value">0%</span>
+                    </div>
+                    <div class="bar encounter-bar">
+                      <div id="encounter-player-timer-fill" class="bar-fill bar-fill-timer"></div>
+                    </div>
+                  </div>
+
+                  <div class="encounter-mode-display">
+                    Mode: <span id="encounter-player-mode">Punch</span>
+                  </div>
+                </section>
+
+                <section class="encounter-side">
+                  <h4 class="encounter-side-title">Enemy</h4>
+                  <div class="encounter-combatant-name" id="encounter-enemy-name">Horned Rabbit</div>
+
+                  <div class="encounter-bar-block">
+                    <div class="encounter-bar-label-row">
+                      <span class="encounter-bar-label">Life</span>
+                      <span id="encounter-enemy-life-text" class="encounter-bar-value">8 / 8</span>
+                    </div>
+                    <div class="bar encounter-bar">
+                      <div id="encounter-enemy-life-fill" class="bar-fill bar-fill-life"></div>
+                    </div>
+                  </div>
+
+                  <div class="encounter-bar-block">
+                    <div class="encounter-bar-label-row">
+                      <span class="encounter-bar-label">Action Timer</span>
+                      <span id="encounter-enemy-timer-text" class="encounter-bar-value">0%</span>
+                    </div>
+                    <div class="bar encounter-bar">
+                      <div id="encounter-enemy-timer-fill" class="bar-fill bar-fill-timer"></div>
+                    </div>
+                  </div>
+
+                  <div class="encounter-mode-display">
+                    Action: <span id="encounter-enemy-action">Attack</span>
+                  </div>
+                </section>
+              </div>
+
+              <div class="encounter-controls">
+                <button class="combat-mode-button is-active" type="button" data-combat-mode="punch">Punch</button>
+                <button class="combat-mode-button" type="button" data-combat-mode="kick">Kick</button>
+                <button class="combat-mode-button" type="button" data-combat-mode="defend">Defend</button>
+                <button class="combat-mode-button" type="button" data-combat-mode="flee">Flee</button>
+              </div>
+            </section>
+
             <div class="panel-section">
               <div class="action-groups">
                 <section class="action-group">

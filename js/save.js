@@ -1,5 +1,3 @@
-// save.js
-
 window.SAVE_KEY = "pathsOfPowerSave";
 
 window.getDefaultGameState = function () {
@@ -15,7 +13,10 @@ window.getDefaultGameState = function () {
       stamina: 1,
       maxStamina: 10,
       mana: 0,
-      maxMana: 0
+      maxMana: 0,
+      speed: 9,
+      toHit: 68,
+      evasion: 5
     },
     vitals: {
       life: {
@@ -45,6 +46,8 @@ window.getDefaultGameState = function () {
       wood: { amount: 0, max: 5, hidden: true },
       stone: { amount: 0, max: 5, hidden: true },
       herbs: { amount: 0, max: 5, hidden: true },
+      horn: { amount: 0, max: 10, hidden: true },
+      leather: { amount: 0, max: 5, hidden: true },
       scrolls: { amount: 0, max: 10, hidden: true }
     },
     upgrades: {
@@ -72,6 +75,14 @@ window.getDefaultGameState = function () {
       blacksmith: false,
       mason: false,
       herbalist: false
+    },
+    encounter: {
+      active: false,
+      location: "wilds",
+      playerMode: "punch",
+      playerActionProgress: 0,
+      enemyActionProgress: 0,
+      enemy: null
     },
     activeTab: "wilds",
     log: [

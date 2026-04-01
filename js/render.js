@@ -1,5 +1,15 @@
 window.getResourceLabel = function (id) {
-  return id.charAt(0).toUpperCase() + id.slice(1);
+  const labels = {
+    gold: "Gold",
+    wood: "Wood",
+    stone: "Stone",
+    herbs: "Herbs",
+    horn: "Horn",
+    leather: "Leather",
+    scrolls: "Scrolls"
+  };
+
+  return labels[id] || id.charAt(0).toUpperCase() + id.slice(1);
 };
 
 window.createResourceCard = function (id) {
@@ -168,6 +178,75 @@ window.renderActionGroups = function () {
   });
 };
 
+window.renderEncounterPanel = function () {
+  const panel = document.getElementById("wilds-encounter-panel");
+  if (!panel) return;
+
+  const wildsButton = uiRefs.tabButtons?.wilds;
+  const encounterActive = !!(game.encounter && game.encounter.active && game.encounter.enemy);
+  const encounterInWilds = encounterActive && game.encounter.location === "wilds";
+  const offWildsTab = game.activeTab !== "wilds";
+
+  panel.classList.toggle("is-hidden", !encounterInWilds);
+
+  if (wildsButton) {
+    wildsButton.classList.toggle("has-encounter-alert", encounterInWilds && offWildsTab);
+  }
+
+  if (!encounterInWilds) return;
+
+  const enemy = game.encounter.enemy;
+  const playerLifePct = game.player.maxLife > 0 ? (game.player.life / game.player.maxLife) * 100 : 0;
+  const playerStaminaPct = game.player.maxStamina > 0 ? (game.player.stamina / game.player.maxStamina) * 100 : 0;
+  const enemyLifePct = enemy.maxLife > 0 ? (enemy.life / enemy.maxLife) * 100 : 0;
+
+  const playerTimerPct = clamp(game.encounter.playerActionProgress * 100, 0, 100);
+  const enemyTimerPct = clamp(game.encounter.enemyActionProgress * 100, 0, 100);
+
+  document.getElementById("encounter-subtitle").textContent = `${enemy.name} engaged in the wilds.`;
+  document.getElementById("encounter-player-name").textContent = game.player.name || "Wanderer";
+  document.getElementById("encounter-player-life-text").textContent = `${formatNumber(game.player.life)} / ${formatNumber(game.player.maxLife)}`;
+  document.getElementById("encounter-player-stamina-text").textContent = `${formatNumber(game.player.stamina)} / ${formatNumber(game.player.maxStamina)}`;
+  document.getElementById("encounter-player-timer-text").textContent = `${Math.round(playerTimerPct)}%`;
+  document.getElementById("encounter-player-life-fill").style.width = `${playerLifePct}%`;
+  document.getElementById("encounter-player-stamina-fill").style.width = `${playerStaminaPct}%`;
+  document.getElementById("encounter-player-timer-fill").style.width = `${playerTimerPct}%`;
+  document.getElementById("encounter-player-mode").textContent = getPlayerCombatModeLabel();
+
+  document.getElementById("encounter-enemy-name").textContent = enemy.name;
+  document.getElementById("encounter-enemy-life-text").textContent = `${formatNumber(enemy.life)} / ${formatNumber(enemy.maxLife)}`;
+  document.getElementById("encounter-enemy-timer-text").textContent = `${Math.round(enemyTimerPct)}%`;
+  document.getElementById("encounter-enemy-life-fill").style.width = `${enemyLifePct}%`;
+  document.getElementById("encounter-enemy-timer-fill").style.width = `${enemyTimerPct}%`;
+
+  const modeButtons = document.querySelectorAll("[data-combat-mode]");
+  modeButtons.forEach(button => {
+    const mode = button.dataset.combatMode;
+    const isActive = game.encounter.playerMode === mode;
+    button.classList.toggle("is-active", isActive);
+    button.disabled = mode === "kick" && game.player.stamina < 1;
+  });
+};
+
+window.renderCharacterPanel = function () {
+  if (uiRefs.playerLevel) {
+    uiRefs.playerLevel.textContent = String(game.player.level);
+  }
+
+  if (uiRefs.playerXp) {
+    uiRefs.playerXp.textContent = `${formatNumber(game.player.xp)} / ${formatNumber(game.player.xpToNext)}`;
+  }
+
+  if (uiRefs.playerTitles) {
+    uiRefs.playerTitles.textContent =
+      game.player.titles.length > 0 ? game.player.titles.join(", ") : "N/A";
+  }
+
+  if (uiRefs.playerName && uiRefs.playerName !== document.activeElement) {
+    uiRefs.playerName.value = game.player.name || "Wanderer";
+  }
+};
+
 window.render = function () {
   if (typeof updateTabVisibility === "function") {
     updateTabVisibility();
@@ -181,4 +260,6 @@ window.render = function () {
   renderVitals();
   renderLog();
   renderActionGroups();
+  renderEncounterPanel();
+  renderCharacterPanel();
 };

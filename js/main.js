@@ -164,6 +164,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  document.querySelectorAll("[data-combat-mode]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!game.encounter.active) return;
+
+      const mode = button.dataset.combatMode;
+
+      if (mode === "kick" && game.player.stamina < 1) {
+        return;
+      }
+
+      game.encounter.playerMode = mode;
+      render();
+      persistGame();
+    });
+  });
+
   document.addEventListener("click", (event) => {
     const button = event.target.closest("[data-action]");
     if (!button) return;
@@ -187,4 +203,27 @@ document.addEventListener("DOMContentLoaded", () => {
   setActiveTab(game.activeTab || "wilds");
   render();
   persistGame();
+
+  let lastCombatTick = performance.now();
+
+  window.setInterval(() => {
+    const now = performance.now();
+    const deltaSeconds = (now - lastCombatTick) / 1000;
+    lastCombatTick = now;
+
+    const combatWasActive = game.encounter.active;
+    const changed = runCombatStep(deltaSeconds);
+
+    if (combatWasActive || game.encounter.active) {
+      render();
+    }
+
+    if (changed) {
+      persistGame();
+    }
+  }, 100);
+
+  window.setInterval(() => {
+    persistGame();
+  }, 5000);
 });
