@@ -55,9 +55,62 @@ button {
   background: linear-gradient(to bottom, #171717, #121212);
 
   display: flex;
-  justify-content: center; /* horizontal center */
+  justify-content: space-between;
   align-items: center;
   text-align: center;
+  gap: 1rem;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.header-button {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  min-width: 64px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+  transition: transform 120ms ease, filter 120ms ease, border-color 120ms ease;
+}
+
+.header-button:hover,
+.header-button:focus-visible {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  outline: none;
+}
+
+.header-button-save {
+  background: #2f8f46;
+  border-color: #47b15f;
+}
+
+.header-button-load {
+  background: #2f67b7;
+  border-color: #4d86d8;
+}
+
+.header-button-wipe {
+  background: #a12b2b;
+  border-color: #c44545;
+}
+
+@media (max-width: 640px) {
+  .site-header {
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 }
 
 .game-title {

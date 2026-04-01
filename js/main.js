@@ -2,6 +2,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabButtons = Array.from(document.querySelectorAll(".tab-button"));
   const tabPanels = Array.from(document.querySelectorAll(".tab-content"));
 
+  if (typeof loadGame === "function" && typeof applyLoadedGame === "function") {
+    applyLoadedGame(game, loadGame());
+  }
+
   uiRefs.playerName = document.getElementById("player-name");
   uiRefs.playerLevel = document.getElementById("player-level");
   uiRefs.playerXp = document.getElementById("player-xp");
@@ -13,6 +17,59 @@ document.addEventListener("DOMContentLoaded", () => {
     village: document.querySelector('[data-tab="village"]'),
     character: document.querySelector('[data-tab="character"]')
   };
+
+  function persistGame() {
+    if (typeof saveGame === "function") {
+      saveGame(game);
+    }
+  }
+
+  const saveButton = document.getElementById("save-button");
+  const loadButton = document.getElementById("load-button");
+  const wipeButton = document.getElementById("wipe-button");
+
+  if (saveButton) {
+    saveButton.addEventListener("click", () => {
+      persistGame();
+      addLog("Game saved.");
+      render();
+    });
+  }
+
+  if (loadButton) {
+    loadButton.addEventListener("click", () => {
+      if (typeof loadGame === "function" && typeof applyLoadedGame === "function") {
+        applyLoadedGame(game, loadGame());
+        addLog("Game loaded.");
+        initializeResourceCards();
+        initializeVitalCards();
+        initializeActionGroups();
+        updateTabVisibility();
+        setActiveTab(game.activeTab || "wilds");
+        render();
+      }
+    });
+  }
+
+  if (wipeButton) {
+    wipeButton.addEventListener("click", () => {
+      const confirmed = window.confirm("Wipe your save and start over?");
+      if (!confirmed) return;
+
+      if (typeof resetSave === "function" && typeof applyLoadedGame === "function") {
+        resetSave();
+        applyLoadedGame(game, getDefaultGameState());
+        addLog("Save wiped. A new beginning awaits.");
+        initializeResourceCards();
+        initializeVitalCards();
+        initializeActionGroups();
+        updateTabVisibility();
+        setActiveTab(game.activeTab || "wilds");
+        render();
+        persistGame();
+      }
+    });
+  }
 
   function updateTabVisibility() {
     if (uiRefs.tabButtons.village) {
@@ -63,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (button.classList.contains("is-hidden")) return;
       setActiveTab(button.dataset.tab);
       render();
+      persistGame();
     });
 
     button.addEventListener("keydown", (event) => {
@@ -87,6 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
       nextButton.focus();
       setActiveTab(nextButton.dataset.tab);
       render();
+      persistGame();
     });
   });
 
@@ -95,9 +154,15 @@ document.addEventListener("DOMContentLoaded", () => {
     tabsContainer.setAttribute("role", "tablist");
   }
 
-  uiRefs.playerName.addEventListener("input", (event) => {
-    game.player.name = event.target.value.trim() || "Wanderer";
-  });
+  if (uiRefs.playerName) {
+    uiRefs.playerName.value = game.player.name || "Wanderer";
+
+    uiRefs.playerName.addEventListener("input", (event) => {
+      game.player.name = event.target.value.trim() || "Wanderer";
+      render();
+      persistGame();
+    });
+  }
 
   document.addEventListener("click", (event) => {
     const button = event.target.closest("[data-action]");
@@ -111,6 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     action.run();
     render();
+    persistGame();
   });
 
   initializeResourceCards();
@@ -120,4 +186,5 @@ document.addEventListener("DOMContentLoaded", () => {
   updateTabVisibility();
   setActiveTab(game.activeTab || "wilds");
   render();
+  persistGame();
 });

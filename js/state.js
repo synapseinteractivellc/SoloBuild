@@ -67,7 +67,8 @@ window.game = {
     herbShears: false
   },
   timers: {
-    rumorSearches: 0
+    rumorSearches: 0,
+    orkSearches: 0
   },
   unlocks: {
     // tabs
