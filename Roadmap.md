@@ -1,4 +1,4 @@
-# 🧭 The Paths of Power — Development Roadmap
+# 🧭 SoloBuild — Development Roadmap
 
 ---
 
