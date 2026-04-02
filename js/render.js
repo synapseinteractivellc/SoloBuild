@@ -26,6 +26,7 @@ window.initializeRenderRefs = function () {
   renderState.uiRefs.tabButtons = {
     wilds: document.querySelector('[data-tab="wilds"]'),
     village: document.querySelector('[data-tab="village"]'),
+    tower: document.querySelector('[data-tab="tower"]'),
     character: document.querySelector('[data-tab="character"]')
   };
 };
@@ -163,6 +164,10 @@ window.updateTabVisibility = function () {
 
   if (uiRefs.tabButtons?.village) {
     uiRefs.tabButtons.village.classList.toggle("is-hidden", !game.unlocks.village);
+  }
+
+  if (uiRefs.tabButtons?.tower) {
+    uiRefs.tabButtons.tower.classList.toggle("is-hidden", !game.unlocks.tower);
   }
 
   if (uiRefs.tabButtons?.character) {

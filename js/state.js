@@ -16,6 +16,7 @@ window.getDefaultGameState = function () {
       toHit: 68,
       evasion: 5
     },
+
     vitals: {
       life: {
         label: "Life",
@@ -39,6 +40,7 @@ window.getDefaultGameState = function () {
         hidden: true
       }
     },
+
     resources: {
       gold: { amount: 0, max: 10, hidden: false },
       wood: { amount: 0, max: 5, hidden: true },
@@ -48,6 +50,7 @@ window.getDefaultGameState = function () {
       leather: { amount: 0, max: 5, hidden: true },
       scrolls: { amount: 0, max: 10, hidden: true }
     },
+
     upgrades: {
       coinPursePurchases: 0,
       coinPurseMax: 2,
@@ -61,12 +64,17 @@ window.getDefaultGameState = function () {
       pickaxe: false,
       herbShears: false
     },
+
     timers: {
       rumorSearches: 0,
-      workSearches: 0
+      workSearches: 0,
+      towerExploreSearches: 0,
+      towerRumorBonusApplied: false
     },
+
     unlocks: {
       village: false,
+      tower: false,
       character: false,
       inn: false,
       market: false,
@@ -74,6 +82,17 @@ window.getDefaultGameState = function () {
       mason: false,
       herbalist: false
     },
+
+    // 🔥 NEW TASK SYSTEM
+    tasks: {
+      active: null
+    },
+
+    tower: {
+      discovered: false,
+      stage: "ruined"
+    },
+
     encounter: {
       active: false,
       location: "wilds",
@@ -82,13 +101,14 @@ window.getDefaultGameState = function () {
       enemyActionProgress: 0,
       enemy: null
     },
+
     activeTab: "wilds",
+
     log: [
       "You awaken battered and exhausted in a world that is not your own."
     ]
   };
 };
-
 window.deepClone = function (value) {
   return JSON.parse(JSON.stringify(value));
 };

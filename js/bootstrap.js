@@ -151,6 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateTabVisibility();
   setActiveTab(getGame().activeTab || "wilds");
   render();
+  startTaskEngine();
   persistGame();
 
   let lastCombatTick = performance.now();

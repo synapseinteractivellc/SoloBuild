@@ -26,7 +26,20 @@ const villageDiscoveries = [
   }
 ];
 
+/*****************************************************
+/
+/          Actions
+/
+*****************************************************/
+
 window.actions = {
+
+  /*****************************************************
+  /
+  /          Wilds Explore Actions
+  /
+  *****************************************************/
+
   initialWander: {
     label: "Wander",
     group: "wilds-exploration",
@@ -74,6 +87,12 @@ window.actions = {
       resolveExploreOutcome();
     }
   },
+
+  /*****************************************************
+  /
+  /          Wilds Survival Actions
+  /
+  *****************************************************/
 
   gatherWood: {
     label: () => (getGame().upgrades.stoneAxe ? "Chop Wood" : "Gather Wood"),
@@ -207,6 +226,12 @@ window.actions = {
       addLog("You rest briefly in the wilds.");
     }
   },
+
+  /*****************************************************
+  /
+  /          Village Explore Actions
+  /
+  *****************************************************/
 
   wanderVillage: {
     label: () => {
@@ -347,6 +372,12 @@ window.actions = {
     }
   },
 
+  /*****************************************************
+  /
+  /          Village Actions
+  /
+  *****************************************************/
+
   muckStables: {
     label: "Muck Stables",
     group: "village-work",
@@ -406,7 +437,8 @@ window.actions = {
 
       game.timers.rumorSearches++;
 
-      if (game.timers.rumorSearches >= 10) {
+      if (!game.timers.towerRumorBonusApplied && game.timers.rumorSearches >= 10) {
+        game.timers.towerRumorBonusApplied = true;
         addLog("You hear of a ruined tower nearby.");
         return;
       }
@@ -418,6 +450,12 @@ window.actions = {
       );
     }
   },
+
+  /*****************************************************
+  /
+  /          Village Market Actions
+  /
+  *****************************************************/
 
   restInn: {
     label: "Rest in Inn",
@@ -457,6 +495,50 @@ window.actions = {
       addLog(`You sell wood for ${gold} gold.`);
     }
   },
+  
+  sellStone: {
+    label: "Sell Stone",
+    group: "village-market",
+    isVisible: () => {
+      const game = getGame();
+      return game.unlocks.village && game.unlocks.mason;
+    },
+    isDisabled: () => getGame().resources.stone.amount < 1,
+    run() {
+      if (!spendResource("stone", 1)) {
+        addLog("No stone to sell.");
+        return;
+      }
+
+      const gold = gainGold(2);
+      addLog(`You sell stone for ${gold} gold.`);
+    }
+  },
+
+  sellHerbs: {
+    label: "Sell Herbs",
+    group: "village-market",
+    isVisible: () => {
+      const game = getGame();
+      return game.unlocks.village && game.unlocks.herbalist;
+    },
+    isDisabled: () => getGame().resources.herbs.amount < 1,
+    run() {
+      if (!spendResource("herbs", 1)) {
+        addLog("No herbs to sell.");
+        return;
+      }
+
+      const gold = gainGold(3);
+      addLog(`You sell herbs for ${gold} gold.`);
+    }
+  },
+
+  /*****************************************************
+  /
+  /        Upgrades in the Village
+  /
+  *****************************************************/
 
   buyCoinPurse: {
     label: "Coin Purse (-10 Gold)",
@@ -560,44 +642,6 @@ window.actions = {
 
       game.upgrades.stoneAxe = true;
       addLog("You now chop wood more efficiently.");
-    }
-  },
-
-  sellStone: {
-    label: "Sell Stone",
-    group: "village-market",
-    isVisible: () => {
-      const game = getGame();
-      return game.unlocks.village && game.unlocks.mason;
-    },
-    isDisabled: () => getGame().resources.stone.amount < 1,
-    run() {
-      if (!spendResource("stone", 1)) {
-        addLog("No stone to sell.");
-        return;
-      }
-
-      const gold = gainGold(2);
-      addLog(`You sell stone for ${gold} gold.`);
-    }
-  },
-
-  sellHerbs: {
-    label: "Sell Herbs",
-    group: "village-market",
-    isVisible: () => {
-      const game = getGame();
-      return game.unlocks.village && game.unlocks.herbalist;
-    },
-    isDisabled: () => getGame().resources.herbs.amount < 1,
-    run() {
-      if (!spendResource("herbs", 1)) {
-        addLog("No herbs to sell.");
-        return;
-      }
-
-      const gold = gainGold(3);
-      addLog(`You sell herbs for ${gold} gold.`);
     }
   },
 
@@ -733,5 +777,48 @@ window.actions = {
 
       addLog(`Herb capacity increased to ${game.resources.herbs.max}.`);
     }
-  }
+  },
+
+  /*****************************************************
+  /
+  /          Tower Actions
+  /
+  *****************************************************/
+  makeCamp: {
+    label: () => {
+      const game = getGame();
+      const task = game.tasks.active;
+      return task?.id === "makeCamp"
+        ? `Make Camp (${task.remaining}s)`
+        : "Make Camp (-1 Wood)";
+    },
+    group: "tower-work",
+    isVisible: () => getGame().unlocks.tower,
+    isDisabled: () => {
+      const game = getGame();
+      return game.tasks.active !== null || game.resources.wood.amount < 1;
+    },
+    run() {
+      startTask("makeCamp");
+    }
+  },
+
+  clearRubble: {
+    label: () => {
+      const game = getGame();
+      const task = game.tasks.active;
+      return task?.id === "clearRubble"
+        ? `Clear Rubble (${task.remaining}s)`
+        : "Clear Rubble";
+    },
+    group: "tower-work",
+    isVisible: () => getGame().unlocks.tower,
+    isDisabled: () => {
+      const game = getGame();
+      return game.tasks.active !== null || game.player.stamina < 1;
+    },
+    run() {
+      startTask("clearRubble");
+    }
+  },
 };

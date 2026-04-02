@@ -14,21 +14,21 @@
 # 🗺️ PHASE 1 — FOUNDATIONS
 
 ## Exploration System
-- [ ] Add "Explore the Wilds" action
-- [ ] Implement exploration outcomes:
-  - [ ] Resource gains (herbs, stone, etc.)
+- [X] Add "Explore the Wilds" action
+- [X] Implement exploration outcomes:
+  - [X] Resource gains (herbs, stone, etc.)
   - [ ] Random events
   - [ ] Discoveries (tower, dungeons, ruins)
 - [ ] Add exploration scaling (based on stats later)
 
 ## Discovery System
-- [ ] Implement hidden → revealed system
-- [ ] Add discovery flags in state
-- [ ] Hook rendering to discovered content
-- [ ] Ensure discovered content stays visible permanently
+- [X] Implement hidden → revealed system
+- [X] Add discovery flags in state
+- [X] Hook rendering to discovered content
+- [X] Ensure discovered content stays visible permanently
 
 ## Abandoned Tower System
-- [ ] Add "Abandoned Tower (Ruins)" discovery
+- [X] Add "Abandoned Tower (Ruins)" discovery
 - [ ] Create tower state (ruined → cleared → rebuilt → expanded)
 - [ ] Add "Clear Tower" action
 - [ ] Add "Rebuild Tower" resource requirements
@@ -41,8 +41,8 @@
 - [ ] Unlock herb gathering via interaction
 
 ## Basic Crafting (Tier 1)
-- [ ] Add Herbs resource
-- [ ] Add "Gather Herbs" action
+- [X] Add Herbs resource
+- [X] Add "Gather Herbs" action
 - [ ] Add "Healing Salve" recipe
 - [ ] Implement crafting system (basic)
 - [ ] Add healing effect (regen or instant)
