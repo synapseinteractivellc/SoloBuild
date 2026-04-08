@@ -33,6 +33,7 @@ window.endEncounter = function () {
   game.encounter.playerActionProgress = 0;
   game.encounter.enemyActionProgress = 0;
   game.encounter.enemy = null;
+  game.encounter.trial = null;
 };
 
 window.setPlayerCombatMode = function (mode) {
@@ -117,10 +118,10 @@ window.handleEncounterVictory = function () {
   const game = getGame();
   const enemyName = game.encounter.enemy ? game.encounter.enemy.name : "Enemy";
 
+  endEncounter();
   gainXp(1);
   addLog(`${enemyName} defeated. You gain 1 XP.`);
   resolveRabbitLoot();
-  endEncounter();
 };
 
 window.handlePlayerDefeat = function () {
@@ -194,10 +195,49 @@ window.resolvePlayerCombatAction = function () {
     return true;
   }
 
-  enemy.life = clamp(enemy.life - damage, 0, enemy.maxLife);
-  addLog(`You ${actionName} the ${enemy.name} for ${damage} damage.`);
+  let finalDamage = damage;
+
+  // Trainer damage reduction
+  if (enemy.damageReduction) {
+    finalDamage = Math.max(0, damage - enemy.damageReduction);
+  }
+
+  enemy.life = clamp(enemy.life - finalDamage, 0, enemy.maxLife);
+
+  if (finalDamage <= 0) {
+    addLog(`Your ${actionName} fails to break the trainer's guard.`);
+  } else {
+    addLog(`You ${actionName} the ${enemy.name} for ${finalDamage} damage.`);
+  }
+
+  // 🔥 TRAINER TRIAL TRACKING
+  if (game.encounter.trial?.type === "martial") {
+    game.encounter.trial.damageDone += finalDamage;
+
+    addLog(
+      `Trial Progress: ${game.encounter.trial.damageDone}/${game.encounter.trial.damageRequired}`
+    );
+
+    if (game.encounter.trial.damageDone >= game.encounter.trial.damageRequired) {
+      game.encounter.trial.passed = true;
+
+      addLog("You have proven your strength!");
+
+      game.teachers.martial.passedTrial = true;
+      game.chosenPath = "martial";
+
+      endEncounter();
+      return true;
+    }
+  }
 
   if (enemy.life <= 0) {
+    if (game.encounter.trial?.type === "martial") {
+      // Trainer cannot be defeated normally
+      enemy.life = 1;
+      return true;
+    }
+
     handleEncounterVictory();
   }
 
@@ -236,6 +276,12 @@ window.resolveEnemyCombatAction = function () {
   addLog(`The ${enemy.name} hits you for ${damage} damage.`);
 
   if (game.player.life <= 0) {
+    if (game.encounter.trial?.type === "martial") {
+      addLog("You collapse before proving yourself.");
+      endEncounter();
+      return true;
+    }
+
     handlePlayerDefeat();
   }
 

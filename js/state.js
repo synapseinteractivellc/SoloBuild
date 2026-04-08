@@ -4,7 +4,7 @@ window.getDefaultGameState = function () {
       name: "Wanderer",
       level: 0,
       xp: 0,
-      xpToNext: 10,
+      xpToNext: 1,
       titles: [],
       life: 1,
       maxLife: 10,
@@ -51,6 +51,14 @@ window.getDefaultGameState = function () {
       scrolls: { amount: 0, max: 10, hidden: true }
     },
 
+    skills: {
+      martial: {
+        level: 1,
+        xp: 0,
+        xpToNext: 10
+      }
+    },
+
     upgrades: {
       coinPursePurchases: 0,
       coinPurseMax: 2,
@@ -83,6 +91,19 @@ window.getDefaultGameState = function () {
       herbalist: false
     },
 
+    // New Trainer System
+    teachers: {
+      martial: {
+        unlocked: true,
+        passedTrial: false
+      },
+      magic: {
+        unlocked: false,
+        passedTrial: false
+      }
+    },
+    chosenPath: null,
+
     // 🔥 NEW TASK SYSTEM
     tasks: {
       active: null
@@ -99,7 +120,18 @@ window.getDefaultGameState = function () {
       playerMode: "punch",
       playerActionProgress: 0,
       enemyActionProgress: 0,
-      enemy: null
+      enemy: null,
+      trial: null
+    },
+
+    combat: {
+      active: false,
+      encounterType: null,
+      encounterId: null,
+      location: null,
+      enemy: null,
+      trainerTrial: null,
+      allowVictoryOnEnemyDeath: true
     },
 
     activeTab: "wilds",

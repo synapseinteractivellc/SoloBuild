@@ -451,6 +451,33 @@ window.actions = {
     }
   },
 
+  testMartialTrainer: {
+    label: "Test with Martial Trainer (5 Gold)",
+    group: "village-work",
+    isVisible: () => {
+      const game = getGame();
+      return (
+        game.unlocks.village &&
+        game.teachers.martial.unlocked &&
+        !game.teachers.martial.passedTrial &&
+        !game.chosenPath
+      );
+    },
+    isDisabled: () => getGame().resources.gold.amount < 5,
+    run() {
+      startMartialTrial();
+    }
+  },
+
+  trainMartial: {
+    label: "Train with Martial Instructor",
+    group: "village-work",
+    isVisible: () => getGame().teachers.martial.passedTrial,
+    run() {
+      startTask("martialTraining");
+    }
+  },
+
   /*****************************************************
   /
   /          Village Market Actions

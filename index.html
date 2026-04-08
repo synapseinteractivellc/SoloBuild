@@ -9,9 +9,15 @@
 <body>
   <div class="app-shell">
     <header class="site-header">
-      <div>
+      <div class="header-left">
         <h1 class="game-title">SoloBuild</h1>
         <p class="game-subtitle">A text-based idle journey through a low-magic frontier.</p>
+      </div>
+
+      <div class="header-center">
+        <div id="header-player-info" class="header-player-info">
+          Wanderer - Level 0
+        </div>
       </div>
 
       <div class="header-actions">
@@ -36,6 +42,93 @@
         </nav>
 
         <section class="panel content-panel">
+          <section id="encounter-panel" class="panel-section encounter-panel is-hidden" aria-live="polite">
+            <div class="encounter-header">
+              <div>
+                <h3 class="encounter-title">Encounter</h3>
+                <p id="encounter-subtitle" class="encounter-subtitle">A threat emerges.</p>
+              </div>
+              <div class="encounter-status">Idle Combat Active</div>
+            </div>
+
+            <div class="encounter-columns">
+              <section class="encounter-side">
+                <h4 class="encounter-side-title">Player</h4>
+                <div class="encounter-combatant-name" id="encounter-player-name">Wanderer</div>
+
+                <div class="encounter-bar-block">
+                  <div class="encounter-bar-label-row">
+                    <span class="encounter-bar-label">Life</span>
+                    <span id="encounter-player-life-text" class="encounter-bar-value">10 / 10</span>
+                  </div>
+                  <div class="bar encounter-bar">
+                    <div id="encounter-player-life-fill" class="bar-fill bar-fill-life"></div>
+                  </div>
+                </div>
+
+                <div class="encounter-bar-block">
+                  <div class="encounter-bar-label-row">
+                    <span class="encounter-bar-label">Stamina</span>
+                    <span id="encounter-player-stamina-text" class="encounter-bar-value">10 / 10</span>
+                  </div>
+                  <div class="bar encounter-bar">
+                    <div id="encounter-player-stamina-fill" class="bar-fill bar-fill-stamina"></div>
+                  </div>
+                </div>
+
+                <div class="encounter-bar-block">
+                  <div class="encounter-bar-label-row">
+                    <span class="encounter-bar-label">Action Timer</span>
+                    <span id="encounter-player-timer-text" class="encounter-bar-value">0%</span>
+                  </div>
+                  <div class="bar encounter-bar">
+                    <div id="encounter-player-timer-fill" class="bar-fill bar-fill-timer"></div>
+                  </div>
+                </div>
+
+                <div class="encounter-mode-display">
+                  Mode: <span id="encounter-player-mode">Punch</span>
+                </div>
+              </section>
+
+              <section class="encounter-side">
+                <h4 class="encounter-side-title">Enemy</h4>
+                <div class="encounter-combatant-name" id="encounter-enemy-name">Enemy</div>
+
+                <div class="encounter-bar-block">
+                  <div class="encounter-bar-label-row">
+                    <span class="encounter-bar-label">Life</span>
+                    <span id="encounter-enemy-life-text" class="encounter-bar-value">0 / 0</span>
+                  </div>
+                  <div class="bar encounter-bar">
+                    <div id="encounter-enemy-life-fill" class="bar-fill bar-fill-life"></div>
+                  </div>
+                </div>
+
+                <div class="encounter-bar-block">
+                  <div class="encounter-bar-label-row">
+                    <span class="encounter-bar-label">Action Timer</span>
+                    <span id="encounter-enemy-timer-text" class="encounter-bar-value">0%</span>
+                  </div>
+                  <div class="bar encounter-bar">
+                    <div id="encounter-enemy-timer-fill" class="bar-fill bar-fill-timer"></div>
+                  </div>
+                </div>
+
+                <div class="encounter-mode-display">
+                  Action: <span id="encounter-enemy-action">Attack</span>
+                </div>
+              </section>
+            </div>
+
+            <div class="encounter-controls">
+              <button class="combat-mode-button is-active" type="button" data-combat-mode="punch">Punch</button>
+              <button class="combat-mode-button" type="button" data-combat-mode="kick">Kick</button>
+              <button class="combat-mode-button" type="button" data-combat-mode="defend">Defend</button>
+              <button class="combat-mode-button" type="button" data-combat-mode="flee">Flee</button>
+            </div>
+          </section>
+
           <div class="tab-content" id="wilds-tab">
             <div class="panel-section">
               <h2 class="panel-title">Wilds</h2>
@@ -43,93 +136,6 @@
                 The land around town is sparse, rough, and touched by just enough magic to make it dangerous.
               </p>
             </div>
-
-            <section id="wilds-encounter-panel" class="panel-section encounter-panel is-hidden" aria-live="polite">
-              <div class="encounter-header">
-                <div>
-                  <h3 class="encounter-title">Encounter</h3>
-                  <p id="encounter-subtitle" class="encounter-subtitle">A threat emerges from the wilds.</p>
-                </div>
-                <div class="encounter-status">Idle Combat Active</div>
-              </div>
-
-              <div class="encounter-columns">
-                <section class="encounter-side">
-                  <h4 class="encounter-side-title">Player</h4>
-                  <div class="encounter-combatant-name" id="encounter-player-name">Wanderer</div>
-
-                  <div class="encounter-bar-block">
-                    <div class="encounter-bar-label-row">
-                      <span class="encounter-bar-label">Life</span>
-                      <span id="encounter-player-life-text" class="encounter-bar-value">10 / 10</span>
-                    </div>
-                    <div class="bar encounter-bar">
-                      <div id="encounter-player-life-fill" class="bar-fill bar-fill-life"></div>
-                    </div>
-                  </div>
-
-                  <div class="encounter-bar-block">
-                    <div class="encounter-bar-label-row">
-                      <span class="encounter-bar-label">Stamina</span>
-                      <span id="encounter-player-stamina-text" class="encounter-bar-value">10 / 10</span>
-                    </div>
-                    <div class="bar encounter-bar">
-                      <div id="encounter-player-stamina-fill" class="bar-fill bar-fill-stamina"></div>
-                    </div>
-                  </div>
-
-                  <div class="encounter-bar-block">
-                    <div class="encounter-bar-label-row">
-                      <span class="encounter-bar-label">Action Timer</span>
-                      <span id="encounter-player-timer-text" class="encounter-bar-value">0%</span>
-                    </div>
-                    <div class="bar encounter-bar">
-                      <div id="encounter-player-timer-fill" class="bar-fill bar-fill-timer"></div>
-                    </div>
-                  </div>
-
-                  <div class="encounter-mode-display">
-                    Mode: <span id="encounter-player-mode">Punch</span>
-                  </div>
-                </section>
-
-                <section class="encounter-side">
-                  <h4 class="encounter-side-title">Enemy</h4>
-                  <div class="encounter-combatant-name" id="encounter-enemy-name">Horned Rabbit</div>
-
-                  <div class="encounter-bar-block">
-                    <div class="encounter-bar-label-row">
-                      <span class="encounter-bar-label">Life</span>
-                      <span id="encounter-enemy-life-text" class="encounter-bar-value">8 / 8</span>
-                    </div>
-                    <div class="bar encounter-bar">
-                      <div id="encounter-enemy-life-fill" class="bar-fill bar-fill-life"></div>
-                    </div>
-                  </div>
-
-                  <div class="encounter-bar-block">
-                    <div class="encounter-bar-label-row">
-                      <span class="encounter-bar-label">Action Timer</span>
-                      <span id="encounter-enemy-timer-text" class="encounter-bar-value">0%</span>
-                    </div>
-                    <div class="bar encounter-bar">
-                      <div id="encounter-enemy-timer-fill" class="bar-fill bar-fill-timer"></div>
-                    </div>
-                  </div>
-
-                  <div class="encounter-mode-display">
-                    Action: <span id="encounter-enemy-action">Attack</span>
-                  </div>
-                </section>
-              </div>
-
-              <div class="encounter-controls">
-                <button class="combat-mode-button is-active" type="button" data-combat-mode="punch">Punch</button>
-                <button class="combat-mode-button" type="button" data-combat-mode="kick">Kick</button>
-                <button class="combat-mode-button" type="button" data-combat-mode="defend">Defend</button>
-                <button class="combat-mode-button" type="button" data-combat-mode="flee">Flee</button>
-              </div>
-            </section>
 
             <div class="panel-section">
               <div class="action-groups">
@@ -211,7 +217,7 @@
                   <div class="action-grid" data-action-group="tower-work"></div>
                 </section>
               </div>
-            </div>            
+            </div>
           </div>
 
           <div class="tab-content is-hidden" id="character-tab">
@@ -231,7 +237,7 @@
 
                 <div class="field">
                   <span class="field-label">XP</span>
-                  <div id="player-xp" class="field-value">0 / 10</div>
+                  <div id="player-xp" class="field-value">0 / 1</div>
                 </div>
 
                 <div class="field field-wide">
@@ -242,12 +248,28 @@
             </div>
 
             <div class="panel-section">
-              <h3 class="section-title">Action Categories</h3>
-              <div class="action-groups">
-                <section class="action-group">
-                  <h4 class="action-group-title">General Actions</h4>
-                  <div class="action-grid" data-action-group="character-general"></div>
-                </section>
+              <h3 class="section-title">Stats</h3>
+
+              <div class="character-grid">
+                <div class="field">
+                  <span class="field-label">Life</span>
+                  <div id="player-life-stat" class="field-value">1 / 10</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">Stamina</span>
+                  <div id="player-stamina-stat" class="field-value">1 / 10</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">To Hit</span>
+                  <div id="player-to-hit" class="field-value">68</div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">Evasion</span>
+                  <div id="player-evasion" class="field-value">5</div>
+                </div>
               </div>
             </div>
           </div>
@@ -266,7 +288,7 @@
     </main>
 
     <footer class="site-footer">
-      <span>© 2026 <a href="https://synapseinteractivellc.github.io/SoloBuild/" target="_blank" rel="noopener">SoloBuild</a> from 
+      <span>© 2026 <a href="https://synapseinteractivellc.github.io/SoloBuild/" target="_blank" rel="noopener">SoloBuild</a> from
         <a href="https://github.com/synapseinteractivellc/SoloBuild/" target="_blank" rel="noopener">Synapse Interactive LLC</a></span>
       <a href="https://opensource.org/license/mit" target="_blank" rel="noopener noreferrer">MIT License</a>
     </footer>
@@ -275,7 +297,10 @@
   <script src="./js/state.js"></script>
   <script src="./js/save.js"></script>
   <script src="./js/main.js"></script>
+  <script src="./js/character.js"></script>
   <script src="./js/combat.js"></script>
+  <script src="./js/trainers.js"></script>
+  <script src="./js/tasks.js"></script>
   <script src="./js/actions.js"></script>
   <script src="./js/render.js"></script>
   <script src="./js/bootstrap.js"></script>

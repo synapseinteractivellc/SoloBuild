@@ -1,8 +1,76 @@
+/*****************************************************
+ *
+ *                    RENDER STATE
+ *
+ *****************************************************/
+
 const renderState = {
   uiRefs: {},
   resourceCards: {},
   vitalCards: {}
 };
+
+/*****************************************************
+ *
+ *                    PRIVATE HELPERS
+ *
+ *****************************************************/
+
+function setText(el, value) {
+  if (el) {
+    el.textContent = value;
+  }
+}
+
+function setWidth(el, value) {
+  if (el) {
+    el.style.width = value;
+  }
+}
+
+function setHidden(el, hidden) {
+  if (el) {
+    el.classList.toggle("is-hidden", hidden);
+  }
+}
+
+function setPressedState(el, isActive) {
+  if (!el) return;
+
+  el.classList.toggle("is-active", isActive);
+  el.setAttribute("aria-selected", String(isActive));
+  el.setAttribute("tabindex", isActive ? "0" : "-1");
+}
+
+function formatCurrentMax(current, max) {
+  return `${formatNumber(current)} / ${formatNumber(max)}`;
+}
+
+function getPercent(current, max) {
+  return max > 0 ? (current / max) * 100 : 0;
+}
+
+function getEncounterRefs() {
+  return renderState.uiRefs.encounter || {};
+}
+
+function getTabButtonList() {
+  return renderState.uiRefs.allTabButtons || [];
+}
+
+function getTabPanelList() {
+  return renderState.uiRefs.allTabPanels || [];
+}
+
+function getActionButtons() {
+  return renderState.uiRefs.actionButtons || [];
+}
+
+/*****************************************************
+ *
+ *                    STATE ACCESSORS
+ *
+ *****************************************************/
 
 window.getUiRefs = function () {
   return renderState.uiRefs;
@@ -16,11 +84,24 @@ window.getVitalCards = function () {
   return renderState.vitalCards;
 };
 
+/*****************************************************
+ *
+ *                    UI REFERENCES
+ *
+ *****************************************************/
+
 window.initializeRenderRefs = function () {
+  renderState.uiRefs.headerPlayerInfo = document.getElementById("header-player-info");
   renderState.uiRefs.playerName = document.getElementById("player-name");
   renderState.uiRefs.playerLevel = document.getElementById("player-level");
   renderState.uiRefs.playerXp = document.getElementById("player-xp");
   renderState.uiRefs.playerTitles = document.getElementById("player-titles");
+
+  renderState.uiRefs.playerLifeStat = document.getElementById("player-life-stat");
+  renderState.uiRefs.playerStaminaStat = document.getElementById("player-stamina-stat");
+  renderState.uiRefs.playerToHit = document.getElementById("player-to-hit");
+  renderState.uiRefs.playerEvasion = document.getElementById("player-evasion");
+
   renderState.uiRefs.eventLog = document.getElementById("event-log");
 
   renderState.uiRefs.tabButtons = {
@@ -29,7 +110,49 @@ window.initializeRenderRefs = function () {
     tower: document.querySelector('[data-tab="tower"]'),
     character: document.querySelector('[data-tab="character"]')
   };
+
+  renderState.uiRefs.allTabButtons = Array.from(
+    document.querySelectorAll(".tab-button")
+  );
+
+  renderState.uiRefs.allTabPanels = Array.from(
+    document.querySelectorAll(".tab-content")
+  );
+
+  renderState.uiRefs.encounter = {
+    panel: document.getElementById("encounter-panel"),
+    subtitle: document.getElementById("encounter-subtitle"),
+
+    playerName: document.getElementById("encounter-player-name"),
+    playerLifeText: document.getElementById("encounter-player-life-text"),
+    playerStaminaText: document.getElementById("encounter-player-stamina-text"),
+    playerTimerText: document.getElementById("encounter-player-timer-text"),
+    playerLifeFill: document.getElementById("encounter-player-life-fill"),
+    playerStaminaFill: document.getElementById("encounter-player-stamina-fill"),
+    playerTimerFill: document.getElementById("encounter-player-timer-fill"),
+    playerMode: document.getElementById("encounter-player-mode"),
+
+    enemyName: document.getElementById("encounter-enemy-name"),
+    enemyLifeText: document.getElementById("encounter-enemy-life-text"),
+    enemyTimerText: document.getElementById("encounter-enemy-timer-text"),
+    enemyLifeFill: document.getElementById("encounter-enemy-life-fill"),
+    enemyTimerFill: document.getElementById("encounter-enemy-timer-fill")
+  };
+
+  renderState.uiRefs.combatModeButtons = Array.from(
+    document.querySelectorAll("[data-combat-mode]")
+  );
+
+  renderState.uiRefs.actionButtons = Array.from(
+    document.querySelectorAll("[data-action]")
+  );
 };
+
+/*****************************************************
+ *
+ *                    RESOURCE HELPERS
+ *
+ *****************************************************/
 
 window.getResourceLabel = function (id) {
   const labels = {
@@ -85,6 +208,12 @@ window.initializeResourceCards = function () {
   });
 };
 
+/*****************************************************
+ *
+ *                    VITAL HELPERS
+ *
+ *****************************************************/
+
 window.createVitalCard = function (id, vital) {
   const card = document.createElement("div");
   card.className = "stat-card stat-inline";
@@ -138,6 +267,12 @@ window.initializeVitalCards = function () {
   });
 };
 
+/*****************************************************
+ *
+ *                    ACTION HELPERS
+ *
+ *****************************************************/
+
 window.initializeActionGroups = function () {
   const groupEls = document.querySelectorAll("[data-action-group]");
 
@@ -156,23 +291,25 @@ window.initializeActionGroups = function () {
       groupEl.appendChild(button);
     });
   });
+
+  renderState.uiRefs.actionButtons = Array.from(
+    document.querySelectorAll("[data-action]")
+  );
 };
+
+/*****************************************************
+ *
+ *                    TAB RENDERING
+ *
+ *****************************************************/
 
 window.updateTabVisibility = function () {
   const game = getGame();
   const uiRefs = getUiRefs();
 
-  if (uiRefs.tabButtons?.village) {
-    uiRefs.tabButtons.village.classList.toggle("is-hidden", !game.unlocks.village);
-  }
-
-  if (uiRefs.tabButtons?.tower) {
-    uiRefs.tabButtons.tower.classList.toggle("is-hidden", !game.unlocks.tower);
-  }
-
-  if (uiRefs.tabButtons?.character) {
-    uiRefs.tabButtons.character.classList.toggle("is-hidden", !game.unlocks.character);
-  }
+  setHidden(uiRefs.tabButtons?.village, !game.unlocks.village);
+  setHidden(uiRefs.tabButtons?.tower, !game.unlocks.tower);
+  setHidden(uiRefs.tabButtons?.character, !game.unlocks.character);
 
   const activeButton = uiRefs.tabButtons?.[game.activeTab];
   if (!activeButton || activeButton.classList.contains("is-hidden")) {
@@ -182,22 +319,38 @@ window.updateTabVisibility = function () {
 
 window.setActiveTab = function (tabId) {
   const game = getGame();
-  const tabButtons = Array.from(document.querySelectorAll(".tab-button"));
-  const tabPanels = Array.from(document.querySelectorAll(".tab-content"));
+  const tabButtons = getTabButtonList();
+  const tabPanels = getTabPanelList();
 
   game.activeTab = tabId;
 
   tabButtons.forEach(button => {
     const isActive = button.dataset.tab === tabId;
-    button.classList.toggle("is-active", isActive);
-    button.setAttribute("aria-selected", String(isActive));
-    button.setAttribute("tabindex", isActive ? "0" : "-1");
+    setPressedState(button, isActive);
   });
 
   tabPanels.forEach(panel => {
     const isActive = panel.id === `${tabId}-tab`;
-    panel.classList.toggle("is-hidden", !isActive);
+    setHidden(panel, !isActive);
   });
+};
+
+/*****************************************************
+ *
+ *                    CORE RENDERERS
+ *
+ *****************************************************/
+
+window.renderHeader = function () {
+  const game = getGame();
+  const uiRefs = getUiRefs();
+
+  if (!uiRefs.headerPlayerInfo) return;
+
+  const name = game.player.name || "Wanderer";
+  const level = game.player.level ?? 0;
+
+  uiRefs.headerPlayerInfo.textContent = `${name} - Level ${level}`;
 };
 
 window.renderResources = function () {
@@ -208,9 +361,10 @@ window.renderResources = function () {
     const card = resourceCards[id];
     if (!card) return;
 
-    card.classList.toggle("is-hidden", resource.hidden);
-    card.querySelector(".resource-value").textContent =
-      `${formatNumber(resource.amount)} / ${resource.max}`;
+    setHidden(card, resource.hidden);
+
+    const valueEl = card.querySelector(".resource-value");
+    setText(valueEl, `${formatNumber(resource.amount)} / ${resource.max}`);
   });
 };
 
@@ -224,11 +378,11 @@ window.renderVitals = function () {
 
     const current = game.player[vital.currentKey];
     const max = game.player[vital.maxKey];
-    const pct = max > 0 ? (current / max) * 100 : 0;
+    const pct = getPercent(current, max);
 
-    refs.card.classList.toggle("is-hidden", vital.hidden);
-    refs.fill.style.width = `${pct}%`;
-    refs.text.textContent = `${formatNumber(current)} / ${formatNumber(max)}`;
+    setHidden(refs.card, vital.hidden);
+    setWidth(refs.fill, `${pct}%`);
+    setText(refs.text, formatCurrentMax(current, max));
   });
 };
 
@@ -241,15 +395,15 @@ window.renderLog = function () {
   uiRefs.eventLog.innerHTML = "";
 
   game.log.forEach(message => {
-    const div = document.createElement("div");
-    div.className = "log-entry";
-    div.textContent = message;
-    uiRefs.eventLog.appendChild(div);
+    const entry = document.createElement("div");
+    entry.className = "log-entry";
+    entry.textContent = message;
+    uiRefs.eventLog.appendChild(entry);
   });
 };
 
 window.renderActionGroups = function () {
-  const buttons = document.querySelectorAll("[data-action]");
+  const buttons = getActionButtons();
 
   buttons.forEach(button => {
     const actionId = button.dataset.action;
@@ -258,119 +412,172 @@ window.renderActionGroups = function () {
     if (!action) return;
 
     const visible = action.isVisible ? action.isVisible() : true;
-    button.classList.toggle("is-hidden", !visible);
+    setHidden(button, !visible);
 
     if (!visible) return;
 
-    button.textContent =
-      typeof action.label === "function" ? action.label() : action.label;
+    setText(
+      button,
+      typeof action.label === "function" ? action.label() : action.label
+    );
 
     button.disabled = action.isDisabled ? action.isDisabled() : false;
   });
 };
 
+/*****************************************************
+ *
+ *                    ENCOUNTER RENDERING
+ *
+ *****************************************************/
+
 window.renderEncounterPanel = function () {
   const game = getGame();
   const uiRefs = getUiRefs();
-  const panel = document.getElementById("wilds-encounter-panel");
+  const encounterRefs = getEncounterRefs();
 
-  if (!panel) return;
+  if (!encounterRefs.panel) return;
 
   const wildsButton = uiRefs.tabButtons?.wilds;
+  const villageButton = uiRefs.tabButtons?.village;
+
   const encounterActive = !!(
     game.encounter &&
     game.encounter.active &&
     game.encounter.enemy
   );
-  const encounterInWilds =
-    encounterActive && game.encounter.location === "wilds";
-  const offWildsTab = game.activeTab !== "wilds";
 
-  panel.classList.toggle("is-hidden", !encounterInWilds);
+  setHidden(encounterRefs.panel, !encounterActive);
 
   if (wildsButton) {
     wildsButton.classList.toggle(
       "has-encounter-alert",
-      encounterInWilds && offWildsTab
+      encounterActive &&
+        game.encounter.location === "wilds" &&
+        game.activeTab !== "wilds"
     );
   }
 
-  if (!encounterInWilds) return;
+  if (villageButton) {
+    villageButton.classList.toggle(
+      "has-encounter-alert",
+      encounterActive &&
+        game.encounter.location === "village" &&
+        game.activeTab !== "village"
+    );
+  }
+
+  if (!encounterActive) return;
 
   const enemy = game.encounter.enemy;
-  const playerLifePct =
-    game.player.maxLife > 0 ? (game.player.life / game.player.maxLife) * 100 : 0;
-  const playerStaminaPct =
-    game.player.maxStamina > 0
-      ? (game.player.stamina / game.player.maxStamina) * 100
-      : 0;
-  const enemyLifePct =
-    enemy.maxLife > 0 ? (enemy.life / enemy.maxLife) * 100 : 0;
 
-  const playerTimerPct = clamp(game.encounter.playerActionProgress * 100, 0, 100);
-  const enemyTimerPct = clamp(game.encounter.enemyActionProgress * 100, 0, 100);
+  const playerLifePct = getPercent(game.player.life, game.player.maxLife);
+  const playerStaminaPct = getPercent(
+    game.player.stamina,
+    game.player.maxStamina
+  );
+  const enemyLifePct = getPercent(enemy.life, enemy.maxLife);
 
-  document.getElementById("encounter-subtitle").textContent =
-    `${enemy.name} engaged in the wilds.`;
-  document.getElementById("encounter-player-name").textContent =
-    game.player.name || "Wanderer";
-  document.getElementById("encounter-player-life-text").textContent =
-    `${formatNumber(game.player.life)} / ${formatNumber(game.player.maxLife)}`;
-  document.getElementById("encounter-player-stamina-text").textContent =
-    `${formatNumber(game.player.stamina)} / ${formatNumber(game.player.maxStamina)}`;
-  document.getElementById("encounter-player-timer-text").textContent =
-    `${Math.round(playerTimerPct)}%`;
-  document.getElementById("encounter-player-life-fill").style.width =
-    `${playerLifePct}%`;
-  document.getElementById("encounter-player-stamina-fill").style.width =
-    `${playerStaminaPct}%`;
-  document.getElementById("encounter-player-timer-fill").style.width =
-    `${playerTimerPct}%`;
-  document.getElementById("encounter-player-mode").textContent =
-    getPlayerCombatModeLabel();
+  const playerTimerPct = clamp(
+    game.encounter.playerActionProgress * 100,
+    0,
+    100
+  );
+  const enemyTimerPct = clamp(
+    game.encounter.enemyActionProgress * 100,
+    0,
+    100
+  );
 
-  document.getElementById("encounter-enemy-name").textContent = enemy.name;
-  document.getElementById("encounter-enemy-life-text").textContent =
-    `${formatNumber(enemy.life)} / ${formatNumber(enemy.maxLife)}`;
-  document.getElementById("encounter-enemy-timer-text").textContent =
-    `${Math.round(enemyTimerPct)}%`;
-  document.getElementById("encounter-enemy-life-fill").style.width =
-    `${enemyLifePct}%`;
-  document.getElementById("encounter-enemy-timer-fill").style.width =
-    `${enemyTimerPct}%`;
+  let subtitle = `${enemy.name} engaged.`;
 
-  const modeButtons = document.querySelectorAll("[data-combat-mode]");
-  modeButtons.forEach(button => {
+  if (game.encounter.location === "wilds") {
+    subtitle = `${enemy.name} engaged in the wilds.`;
+  } else if (game.encounter.location === "village") {
+    subtitle = `${enemy.name} engaged in the village.`;
+  }
+
+  if (game.encounter.trial?.type === "martial") {
+    subtitle = `${enemy.name} trial in progress. Deal ${game.encounter.trial.damageRequired} damage to pass.`;
+  }
+
+  setText(encounterRefs.subtitle, subtitle);
+  setText(encounterRefs.playerName, game.player.name || "Wanderer");
+  setText(
+    encounterRefs.playerLifeText,
+    formatCurrentMax(game.player.life, game.player.maxLife)
+  );
+  setText(
+    encounterRefs.playerStaminaText,
+    formatCurrentMax(game.player.stamina, game.player.maxStamina)
+  );
+  setText(encounterRefs.playerTimerText, `${Math.round(playerTimerPct)}%`);
+  setText(encounterRefs.playerMode, getPlayerCombatModeLabel());
+
+  setWidth(encounterRefs.playerLifeFill, `${playerLifePct}%`);
+  setWidth(encounterRefs.playerStaminaFill, `${playerStaminaPct}%`);
+  setWidth(encounterRefs.playerTimerFill, `${playerTimerPct}%`);
+
+  setText(encounterRefs.enemyName, enemy.name);
+  setText(
+    encounterRefs.enemyLifeText,
+    formatCurrentMax(enemy.life, enemy.maxLife)
+  );
+  setText(encounterRefs.enemyTimerText, `${Math.round(enemyTimerPct)}%`);
+
+  setWidth(encounterRefs.enemyLifeFill, `${enemyLifePct}%`);
+  setWidth(encounterRefs.enemyTimerFill, `${enemyTimerPct}%`);
+
+  uiRefs.combatModeButtons.forEach(button => {
     const mode = button.dataset.combatMode;
     const isActive = game.encounter.playerMode === mode;
 
     button.classList.toggle("is-active", isActive);
-    button.disabled = mode === "kick" && game.player.stamina < 1;
+
+    const kickDisabled = mode === "kick" && game.player.stamina < 1;
+    const fleeDisabled = !!game.encounter.trial;
+
+    button.disabled = kickDisabled || (mode === "flee" && fleeDisabled);
   });
 };
+
+/*****************************************************
+ *
+ *                    CHARACTER RENDERING
+ *
+ *****************************************************/
 
 window.renderCharacterPanel = function () {
   const game = getGame();
   const uiRefs = getUiRefs();
 
-  if (uiRefs.playerLevel) {
-    uiRefs.playerLevel.textContent = String(game.player.level);
-  }
-
-  if (uiRefs.playerXp) {
-    uiRefs.playerXp.textContent =
-      `${formatNumber(game.player.xp)} / ${formatNumber(game.player.xpToNext)}`;
-  }
-
-  if (uiRefs.playerTitles) {
-    uiRefs.playerTitles.textContent =
-      game.player.titles.length > 0 ? game.player.titles.join(", ") : "N/A";
-  }
+  setText(uiRefs.playerLevel, String(game.player.level));
+  setText(uiRefs.playerXp, formatCurrentMax(game.player.xp, game.player.xpToNext));
+  setText(
+    uiRefs.playerTitles,
+    game.player.titles.length > 0 ? game.player.titles.join(", ") : "N/A"
+  );
+  setText(
+    uiRefs.playerLifeStat,
+    formatCurrentMax(game.player.life, game.player.maxLife)
+  );
+  setText(
+    uiRefs.playerStaminaStat,
+    formatCurrentMax(game.player.stamina, game.player.maxStamina)
+  );
+  setText(uiRefs.playerToHit, String(formatNumber(game.player.toHit)));
+  setText(uiRefs.playerEvasion, String(formatNumber(game.player.evasion)));
 
   if (uiRefs.playerName && uiRefs.playerName !== document.activeElement) {
     uiRefs.playerName.value = game.player.name || "Wanderer";
   }
 };
+
+/*****************************************************
+ *
+ *                    MASTER RENDER
+ *
+ *****************************************************/
 
 window.render = function () {
   const game = getGame();
@@ -381,6 +588,7 @@ window.render = function () {
     setActiveTab(game.activeTab);
   }
 
+  renderHeader();
   renderResources();
   renderVitals();
   renderLog();
